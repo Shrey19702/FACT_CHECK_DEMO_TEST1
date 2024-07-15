@@ -3,59 +3,29 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
 
 // get model response
-export const get_res_db_updates = async ({ formData, new_token_amount, user_id }) => {
-
+export const db_updates = async ({ new_token_amount, user_id }) => {
     const supabase = createClient();
+    const { data, error } = await supabase
+        .from('Tokens')
+        .update({ "token_amount": new_token_amount })
+        .eq('id', user_id)
+        .select()
 
-    let res_data = null;
-    let IP = process.env.SERVER_IP;
-    try {
-        const options = {
-            method: 'POST',
-            body: formData
-        };
-        const response = await fetch(`${IP}/api/generate-result`, options);
-        res_data = await response.json();
-
-        // DEDUCT COST FROM THE DB
-        // console.log("DB ACCESS NEW TOKENS=", new_token_amount)
-        const { data, error } = await supabase
-            .from('Tokens')
-            .update({ "token_amount": new_token_amount })
-            .eq('id', user_id)
-            .select()
-
-        if(error){
-            console.error("ERROR: ",error)
-            return {message: "error in updating tokens"}
-        }
-        // console.log("Tokens Updated: ", data)
+    if (error) {
+        console.error("ERROR: ", error)
+        return { error: "error in updating tokens" }
     }
-    catch (error) {
-        if(error.cause !== undefined ){
-            if (error.cause.code === 'ECONNREFUSED') {
-                return { message: "ML MODEL API NOT AVAILABLE" }
-            }
-        }
-        else{
-            console.error(error);
-            return { message: error }
-        }
-        //SERVER ISSUE
-        return { message: error.cause.code }
-    }
-
-    return res_data
-
+    return null;
 }
+
 // get user data
 export const get_user_data = async () => {
 
     const supabase = createClient();
     const { data: { user } } = await supabase.auth.getUser();
     //IF NO USER LOGIN RETURN UNDEFINED 
-    if(user===null){
-        return ;
+    if (user === null) {
+        return;
     }
     const user_id = user.id;
     //FETCH TOKENS
@@ -75,11 +45,11 @@ export const get_user_data = async () => {
     return user_data;
 }
 // logout user
-export const user_logout = async () =>{
+export const user_logout = async () => {
     const supabase = createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
-    if(user===null)
+    if (user === null)
         return;
 
     await supabase.auth.signOut();

@@ -1,7 +1,8 @@
 import React, { useState, useRef } from 'react';
 import Image from 'next/image';
+import { createClient } from '@/utils/supabase/client';
 
-import { get_res_db_updates } from "@/utils/data_fetch";
+import { db_updates } from "@/utils/data_fetch";
 
 const Form = ({ user_data, set_user_data, response_data, set_res_data, fileUrl, setfileUrl, set_file_metadata, set_chosen_analysis }) => {
 
@@ -102,20 +103,62 @@ const Form = ({ user_data, set_user_data, response_data, set_res_data, fileUrl, 
 
             const user_id = user_data.id
             const new_token_amount = user_data.tokens - cost
-            // console.log(new_token_amount, user_id);
-            const res_data = await get_res_db_updates({ formData, new_token_amount, user_id });
 
-            set_user_data({ ...user_data, tokens: new_token_amount })
-            // const options = {
-            //     method: 'POST',
-            //     body: formData
-            // };
-            // console.log(formData)
-            // const response = await fetch(`/api/generate-result`, options);
-            // const res_data = await response.json();
+
+            let res_data = {};
+            // get the ip for data request
+            //get the auth token as well
+
+            //get user session
+            const supabase = createClient();
+            const {
+                data: { session }, error
+            } = await supabase.auth.getSession();
+            if(error){
+                res_data = {message: "unable to get user auth tokens"};
+                set_res_data(res_data);
+                set_chosen_analysis(analysisTypes);
+                return;
+            }
+
+            const IP = process.env.NEXT_PUBLIC_SERVER_IP;
+            const token = session?.access_token;
+
+            try {
+                const options = {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    },
+                };
+                const response = await fetch(`${IP}/api/generate-result`, options);
+                res_data = await response.json();
+            }
+            catch (error) {
+                res_data = { message: "ML MODEL API NOT AVAILABLE" }
+                set_res_data(res_data);
+                set_chosen_analysis(analysisTypes);
+                return;
+            }
+
+            if(res_data.error !== undefined){
+                res_data = {message: res_data.error}
+            }
+
+            // UPDATE DB for TOKENS
+            const db_update_res = await db_updates({ new_token_amount, user_id });
+            if(db_update_res!==null){
+                res_data = {message: db_update_res.error};
+                set_res_data(res_data);
+                set_chosen_analysis(analysisTypes);
+                return;
+            }
+
+            // setup the data if no issue occured
+            set_user_data({ ...user_data, tokens: new_token_amount });
 
             set_file_metadata({
-                lastModifiedDate: file.lastModifiedDate,
                 name: file.name,
                 size: file.size,
                 type: file.type
@@ -129,7 +172,6 @@ const Form = ({ user_data, set_user_data, response_data, set_res_data, fileUrl, 
         }
 
         // Create a URL for the uploaded video file
-        // console.log(file);
         let new_fileUrl = URL.createObjectURL(file);
         setfileUrl(new_fileUrl);
 
