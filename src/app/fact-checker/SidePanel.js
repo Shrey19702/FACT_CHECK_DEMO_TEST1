@@ -15,7 +15,7 @@ const SidePanel = ({ user_data, handle_newCheck }) => {
     // }
 
     const handle_logout = ()=>{
-        console.log("logout client");
+        // console.log("logout client");
         user_logout();
     }
 

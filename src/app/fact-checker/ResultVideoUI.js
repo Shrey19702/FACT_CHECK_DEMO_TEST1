@@ -2,6 +2,8 @@ import LineChart from './LineChart';
 import React, { useState, useRef } from 'react';
 import Waveform from './Waveform';
 
+import generatePDF from 'react-to-pdf';
+
 const ResultsVideoUI = ({ response_data, fileUrl, file_metadata, analysisTypes }) => {
 
     const text_val = {
@@ -10,6 +12,7 @@ const ResultsVideoUI = ({ response_data, fileUrl, file_metadata, analysisTypes }
     };
 
     const videoRef = useRef(null);
+    const pdfRef = useRef(null);
 
     const [currentTime, setCurrentTime] = useState(0);
     const [duration, setDuration] = useState(0);
@@ -193,7 +196,7 @@ const ResultsVideoUI = ({ response_data, fileUrl, file_metadata, analysisTypes }
                 {/* </div> */}
 
                 {/* ANALYSIS */}
-                <div className="w-full flex flex-col lg:gap-3 items-center bg-slate-100 ">
+                <div ref={pdfRef} className="w-full flex flex-col lg:gap-3 items-center bg-slate-100 ">
                     {/* <span className=' text-3xl mt-10'>
                         Deepfake Check Results
                     </span> */}
@@ -490,6 +493,17 @@ const ResultsVideoUI = ({ response_data, fileUrl, file_metadata, analysisTypes }
                             <span>{file_metadata.type}</span>
                         </div>
                     </div>
+                </div>
+
+                <div 
+                    onClick={  ()=>{generatePDF(pdfRef, {filename: 'file.pdf'})}  } 
+                    className=' flex items-center gap-4 w-fit rounded text-gray-700  text-lg px-10 py-4 bg-blue-300 hover:bg-sky-300 shadow transition-all duration-500 cursor-pointer '
+                >
+                    Save PDF of currently visible Analysis
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1} stroke="currentColor" className="size-8">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
+                    </svg>
+
                 </div>
             </>
         )

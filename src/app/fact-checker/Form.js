@@ -272,7 +272,7 @@ const Form = ({ user_data, set_user_data, response_data, set_res_data, fileUrl, 
                                 </svg>
                                 <p>Drag and drop a file here, or click to select a file</p>
 
-                                <p className="text-gray-500 text-sm">Max file size: 20MB</p>
+                                <p className="text-gray-500 text-sm">Max file size: 100MB</p>
                             </div>
                         </>
                     )}

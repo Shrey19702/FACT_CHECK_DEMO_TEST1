@@ -12,7 +12,6 @@ export async function GET(request) {
   if (code) {
     const supabase = createClient();
     const { data, error } = await supabase.auth.exchangeCodeForSession(code);
-    console.log(data);
     if (error) {
       console.error('Error exchanging code for session:', error);
       return NextResponse.redirect(`${origin}/login?message=Could not authenticate user`);
