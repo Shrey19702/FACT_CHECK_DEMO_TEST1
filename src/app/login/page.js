@@ -70,9 +70,9 @@ export default async function Login({ searchParams }) {
 
   return (
     <>
-      <div className=' flex flex-col justify-between h-screen items-center'>
+      <div className=' flex flex-col justify-between h-screen items-center bg-white'>
 
-        <div className=' absolute -z-10 h-screen w-screen'>
+        {/* <div className=' absolute -z-10 h-screen w-screen'>
           <Image
             src={`/background.jpg`}
             fill
@@ -81,7 +81,7 @@ export default async function Login({ searchParams }) {
             priority
             className=' h-screen w-screen brightness-90 aspect-video object-cover'
           />
-        </div>
+        </div> */}
 
         <Login_block
           signIn={signIn}
@@ -90,7 +90,7 @@ export default async function Login({ searchParams }) {
           eventInfo={searchParams}
         />
 
-        <div className='flex  pb-10 text-black font-medium divide-x-2 divide-black'>
+        <div className='flex  pb-4 text-black font-medium divide-x-2 divide-black'>
           <div className=' hover:underline underline-offset-4 text-center px-3'>
             <Link href={'/terms-of-service'} > Terms of Service</Link>
           </div>

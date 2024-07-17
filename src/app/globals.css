@@ -2,45 +2,40 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
+@layer base {
+	:root {
+		--color-primary: 2 83 288;
+	}
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
-  }
+:root {
+	--foreground-rgb: 0, 0, 0;
+	--background-start-rgb: 214, 219, 220;
+	--background-end-rgb: 255, 255, 255;
 }
 
 body {
-  color: black;
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+	color: black;
+	background: linear-gradient(to bottom,
+			transparent,
+			rgb(var(--background-end-rgb))) rgb(var(--background-start-rgb));
 }
 
 @layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
+	.text-balance {
+		text-wrap: balance;
+	}
 }
 
 
 .win10-thumb {
-  font-size: 1.5rem;
-  color: #2b2d42;
-  
-  --track-height: 0.125em;
-  --track-color: rgba(0, 0, 0, 0.2);
-  --brightness-hover: 180%;
-  --brightness-down: 80%;
+	font-size: 1.5rem;
+	color: #fff;
+
+	--track-height: 0.125em;
+	--track-color: rgba(255, 255, 255, 0.3);
+	--brightness-hover: 180%;
+	--brightness-down: 80%;
 	--thumb-height: 1.375em;
 	--thumb-width: 0.5em;
 	--clip-edges: 0.0125em;
@@ -75,32 +70,29 @@ input[type="range"]::-webkit-slider-runnable-track,
 input[type="range"]::-webkit-slider-thumb {
 	position: relative;
 }
+
 input[type="range"]::-webkit-slider-thumb {
 	--thumb-radius: calc((var(--thumb-height) * 0.5) - 1px);
 	--clip-top: calc((var(--thumb-height) - var(--track-height)) * 0.5 - 0.5px);
 	--clip-bottom: calc(var(--thumb-height) - var(--clip-top));
 	--clip-further: calc(100% + 1px);
-	--box-fill: calc(-100vmax - var(--thumb-width, var(--thumb-height))) 0 0
-		100vmax currentColor;
+	--box-fill: calc(-100vmax - var(--thumb-width, var(--thumb-height))) 0 0 100vmax currentColor;
 
 	width: var(--thumb-width, var(--thumb-height));
-	background: linear-gradient(currentColor 0 0) scroll no-repeat left center /
-		50% calc(var(--track-height) + 1px);
+	background: linear-gradient(currentColor 0 0) scroll no-repeat left center / 50% calc(var(--track-height) + 1px);
 	background-color: currentColor;
 	box-shadow: var(--box-fill);
 	border-radius: var(--thumb-width, var(--thumb-height));
 
 	filter: brightness(100%);
-	clip-path: polygon(
-		100% -1px,
-		var(--clip-edges) -1px,
-		0 var(--clip-top),
-		-100vmax var(--clip-top),
-		-100vmax var(--clip-bottom),
-		0 var(--clip-bottom),
-		var(--clip-edges) 100%,
-		var(--clip-further) var(--clip-further)
-	);
+	clip-path: polygon(100% -1px,
+			var(--clip-edges) -1px,
+			0 var(--clip-top),
+			-100vmax var(--clip-top),
+			-100vmax var(--clip-bottom),
+			0 var(--clip-bottom),
+			var(--clip-edges) 100%,
+			var(--clip-further) var(--clip-further));
 }
 
 input[type="range"]:hover::-webkit-slider-thumb {
@@ -114,8 +106,7 @@ input[type="range"]:active::-webkit-slider-thumb {
 }
 
 input[type="range"]::-webkit-slider-runnable-track {
-	background: linear-gradient(var(--track-color) 0 0) scroll no-repeat center /
-		100% calc(var(--track-height) + 1px);
+	background: linear-gradient(var(--track-color) 0 0) scroll no-repeat center / 100% calc(var(--track-height) + 1px);
 }
 
 input[type="range"]:disabled::-webkit-slider-thumb {
@@ -184,4 +175,3 @@ input[type="range"]:active::-moz-range-progress {
 input[type="range"]:disabled::-moz-range-thumb {
 	cursor: not-allowed;
 }
-

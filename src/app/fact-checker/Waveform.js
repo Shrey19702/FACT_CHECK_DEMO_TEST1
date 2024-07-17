@@ -11,7 +11,7 @@ const Waveform = ({ videoRef }) => {
                 container: waveformRef.current,
                 media: videoRef.current,
                 waveColor: '#4f88c8',
-                progressColor: '#2222ee',
+                progressColor: '#0253E4',
                 height: "auto",
                 "barWidth": 2,
                 "barGap": 1,

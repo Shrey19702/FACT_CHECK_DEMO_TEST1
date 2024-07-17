@@ -1,5 +1,5 @@
 "use client"
-
+import Image from "next/image";
 import { useState } from "react";
 
 const Login_block = ({ signIn, signUp, handleGoogleSignIn, eventInfo }) => {
@@ -40,37 +40,82 @@ const Login_block = ({ signIn, signUp, handleGoogleSignIn, eventInfo }) => {
 
     return (
         <>
-            <div className=' bg-white/60 backdrop-blur mt-10  flex flex-col items-center w-fit py-12 px-20 rounded-xl text-gray-800 '>
+            <div className=' shadow-md shadow-primary bg-white mt-10 flex flex-col items-stretch w-fit py-10 px-10 rounded-xl text-gray-800 '>
 
                 {/* LOGO */}
-                <div className=' text-4xl py-2 mb-12'>
-                    Contrails.ai
+                <div className=' text-primary w-full text-xl font-bold pb-7 flex justify-start items-center gap-3'>
+                    <Image src={'/logo.svg'} width={30} height={20} alt="LOGO" />
+                    Contrails AI
+                </div>
+
+                <div className=" text-3xl font-semibold">
+                    {show_signup ? 'Create your Account' : 'Login to your Account'}
+                </div>
+                <div className=' font-light mb-2'>
+                    {show_signup ? 'Hello! select method of signup:' : 'Welcome back! select method to login:'}
+                </div>
+
+
+                {/* OTHER PROVIDERS */}
+                <button
+                    onClick={(e) => { e.preventDefault(); handleGoogleSignIn() }}
+                    className=' mt-5 flex items-center gap-2 border px-4 py-3 min-w-80 border-gray-300 rounded-lg hover:bg-gray-50 transition-all'
+                >
+
+                    <span>
+                        <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="30" height="30" viewBox="0 0 48 48">
+                            <path fill="#fbc02d" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12	s5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24s8.955,20,20,20	s20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"></path><path fill="#e53935" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039	l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"></path><path fill="#4caf50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36	c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"></path><path fill="#1565c0" d="M43.611,20.083L43.595,20L42,20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571	c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z"></path>
+                        </svg>
+                    </span>
+
+                    Continue with Google
+                </button>
+
+
+                {/* OR */}
+                <div className='flex items-center gap-3 pt-7  pb-5'>
+
+                    <div className='w-32 h-[1px] bg-gray-400' />
+                    <div className=" text-sm text-gray-600">
+                        or continue with email
+                    </div>
+                    <div className='w-32 h-[1px] bg-gray-400' />
                 </div>
 
                 {/* FORM */}
-                <form onSubmit={handle_pass_signin} className=' flex flex-col gap-2 mb-5'>
-                    <div className=' text-3xl font-light mb-2'>
-                        {show_signup ? 'Create Your Account' : 'Welcome back'}
-                    </div>
-                    <label className=' h-0 relative z-10 font-medium text-xs top-3 left-2 ' htmlFor="password">Email</label>
+                <form onSubmit={handle_pass_signin} className=' flex flex-col gap-2'>
+                    <label className=' flex gap-1 h-0 relative z-10 font-medium text-xs top-3 left-2 ' htmlFor="password">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1} stroke="currentColor" className="size-4">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" />
+                        </svg>
+                        Email
+                    </label>
                     <input
                         name='email'
                         type="email"
                         required
                         value={email}
-                        className='bg-white/80 focus:bg-white outline-none pt-5 pb-1 px-2 min-w-96 rounded-sm'
+                        className='border-2 bg-gray-50 focus:bg-white outline-none pt-5 pb-1 px-2 min-w-96 rounded-lg'
                         onChange={(e) => setEmail(e.target.value)}
                     />
-                    <label className=' h-0 relative z-10 font-medium text-xs top-3 left-2 ' htmlFor="password">Password</label>
+                    <label className=' flex gap-1 h-0 relative z-10 font-medium text-xs top-3 left-2 ' htmlFor="password">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1} stroke="currentColor" className="size-4">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
+                        </svg>
+                        Password
+                    </label>
                     <input
                         name='password'
                         type="password"
                         required
                         value={password}
-                        className='bg-white/80 focus:bg-white outline-none pt-5 pb-1 px-2 mb-2 min-w-96 rounded-sm'
+                        className='border-2 bg-gray-50 focus:bg-white outline-none pt-5 pb-1 px-2 min-w-96 rounded-lg'
                         onChange={(e) => setPassword(e.target.value)}
                     />
-                    <button type="submit" className=' flex gap-3 items-center justify-center border p-2 font-medium hover:bg-white/15 rounded-sm transition-all'>
+                    <div className=" w-full text-sm text-end pb-2 text-primary cursor-pointer">
+                        Forgot password?
+                    </div>
+                    <button type="submit" className=' outline-none flex gap-3 items-center justify-center p-3 font-medium bg-primary hover:bg-primary/90 text-white rounded-lg transition-all'>
                         <div>
                             {show_signup ? 'Create Account' : 'Log In'}
                         </div>
@@ -85,50 +130,26 @@ const Login_block = ({ signIn, signUp, handleGoogleSignIn, eventInfo }) => {
                         }
                     </button>
 
-                    <div className=' font-medium text-sm text-center m-1 '>
+                    <div className=' font-medium text-sm text-center mt-5 '>
                         {
                             show_signup ?
                                 <>
                                     Already have an account?
-                                    <span onClick={() => { set_show_signup(false) }} className=' px-2 cursor-pointer text-sky-800'>
+                                    <span onClick={() => { set_show_signup(false) }} className=' px-2 cursor-pointer text-primary'>
                                         Login
                                     </span>
                                 </>
                                 :
                                 <>
                                     Don&apos;t have an account?
-                                    <span onClick={() => { set_show_signup(true) }} className=' px-2 cursor-pointer text-sky-800'>
-                                        Signup
+                                    <span onClick={() => { set_show_signup(true) }} className=' px-2 cursor-pointer text-primary'>
+                                        Create an account
                                     </span>
                                 </>
                         }
                     </div>
 
                 </form>
-
-                {/* OR */}
-                <div className='flex items-center gap-3'>
-                    <div className='w-32 h-0.5 bg-gray-400' />
-                    <div>
-                        OR
-                    </div>
-                    <div className='w-32 h-0.5 bg-gray-400' />
-                </div>
-
-                {/* OTHER PROVIDERS */}
-                <button
-                    onClick={(e) => { e.preventDefault(); handleGoogleSignIn() }}
-                    className=' flex items-center gap-2 border px-4 py-3 min-w-80 border-gray-500 rounded mt-4 hover:bg-white/30 transition-all'
-                >
-
-                    <span>
-                        <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="30" height="30" viewBox="0 0 48 48">
-                            <path fill="#fbc02d" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12	s5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24s8.955,20,20,20	s20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"></path><path fill="#e53935" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039	l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"></path><path fill="#4caf50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36	c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"></path><path fill="#1565c0" d="M43.611,20.083L43.595,20L42,20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571	c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z"></path>
-                        </svg>
-                    </span>
-
-                    Continue with Google
-                </button>
 
             </div>
 

@@ -1,7 +1,7 @@
-import { Inter } from "next/font/google";
+import { Outfit } from "next/font/google";
 import "./globals.css";
 
-const inter = Inter({ subsets: ["latin"] });
+const outfit = Outfit({ subsets: ["latin"] });
 
 export const metadata = {
   title: "Create Next App",
@@ -17,7 +17,7 @@ export default function RootLayout({ children }) {
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet" />
       </head>
 
-      <body className={inter.className}>{children}</body>
+      <body className={outfit.className}>{children}</body>
     </html>
   );
 }
