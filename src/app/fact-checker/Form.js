@@ -98,9 +98,9 @@ const Form = ({ user_data, set_user_data, response_data, set_res_data, fileUrl, 
         //Form Submittion
         try {
             const formData = new FormData();
-            formData.append(uploadType, file);
-            formData.append('analysisTypes', JSON.stringify(analysisTypes));
-            formData.append('uploadType', JSON.stringify(uploadType));
+            formData.append('file', file);
+            formData.append('analysis_types', JSON.stringify(analysisTypes));
+            formData.append('upload_type', JSON.stringify(uploadType));
 
             const user_id = user_data.id
             const new_token_amount = user_data.tokens - cost
@@ -141,6 +141,14 @@ const Form = ({ user_data, set_user_data, response_data, set_res_data, fileUrl, 
             }
             
             if (res_data.message !== undefined) {
+                console.log("ERROR FROM SERVER: ", res_data);
+                res_data = { message: "Server had an issue" };
+                set_res_data(res_data);
+                set_chosen_analysis(analysisTypes);
+                setLoading(false);
+                return;
+            }
+            if (res_data.detail !== undefined) {
                 console.log("ERROR FROM SERVER: ", res_data);
                 res_data = { message: "Server had an issue" };
                 set_res_data(res_data);

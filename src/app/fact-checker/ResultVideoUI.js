@@ -176,7 +176,7 @@ const ResultsVideoUI = ({ response_data, fileUrl, file_metadata, analysisTypes, 
     }
 
     if (response_data["message"] === undefined) {
-        console.log(response_data);
+        // console.log(response_data);
         return (
             <>
                 {/* ANALYSIS */}
