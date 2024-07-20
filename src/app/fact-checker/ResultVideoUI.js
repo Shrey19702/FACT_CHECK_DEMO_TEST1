@@ -2,8 +2,6 @@ import LineChart from './LineChart';
 import React, { useState, useRef } from 'react';
 import Waveform from './Waveform';
 
-import generatePDF from 'react-to-pdf';
-
 const ResultsVideoUI = ({ response_data, fileUrl, file_metadata, analysisTypes, pdfRef }) => {
 
     const text_val = {
@@ -12,8 +10,12 @@ const ResultsVideoUI = ({ response_data, fileUrl, file_metadata, analysisTypes, 
     };
 
     const videoRef = useRef(null);
-
     const [currentTime, setCurrentTime] = useState(0);
+
+    const [bbox_idx, set_bbox_idx] = useState(0);
+    const [videoDimensions, setVideoDimensions] = useState({ width: 0, height: 0 });
+    const bboxes = response_data?.frameCheck?.bboxes || [];
+
     const [duration, setDuration] = useState(0);
 
     const [playing, setPlaying] = useState(false);
@@ -28,6 +30,8 @@ const ResultsVideoUI = ({ response_data, fileUrl, file_metadata, analysisTypes, 
 
         const video_duration = videoRef.current.duration;
         setDuration(video_duration);
+        const { videoWidth, videoHeight } = videoRef.current;
+        setVideoDimensions({ width: videoWidth, height: videoHeight });
 
         let last_frame = {};
         if (response_data["frameCheck"] !== undefined)
@@ -137,6 +141,7 @@ const ResultsVideoUI = ({ response_data, fileUrl, file_metadata, analysisTypes, 
         const newTime = (event.target.value * duration) / 100;
         videoRef.current.currentTime = newTime;
         setCurrentTime(newTime);
+        set_bbox_idx(Math.floor(newTime * 50 / duration));
     };
 
     const handleTimeUpdate = () => {
@@ -146,6 +151,12 @@ const ResultsVideoUI = ({ response_data, fileUrl, file_metadata, analysisTypes, 
         // console.log(duration, videoRef.current.currentTime);
 
         setCurrentTime(videoRef.current.currentTime);
+        //bbox update
+        set_bbox_idx(Math.floor(videoRef.current.currentTime * 50 / duration));
+
+        // if(Math.floor(videoRef.current.currentTime*50/duration) >= (bbox_idx+1)*(duration/50) && bbox_idx!==49){
+        //     set_bbox_idx(bbox_idx+1);
+        // }
     };
 
     const formatTime = (time) => {
@@ -364,16 +375,44 @@ const ResultsVideoUI = ({ response_data, fileUrl, file_metadata, analysisTypes, 
                         </div>
 
                         {/* VIDEO */}
-                        <div className=' w-full flex justify-center'>
-                            <video
-                                ref={videoRef}
-                                src={fileUrl}
-                                controls={false} // Disable inbuilt video player buttons and interactions
-                                onError={handleVideoError}
-                                onTimeUpdate={handleTimeUpdate}
-                                onLoadedMetadata={handleVideoLoadedMetadata}
-                                className=" w-fit max-w-3xl h-[60vh] "
-                            />
+                        <div className='relative w-full flex flex-col items-center justify-center'>
+                            <div className='relative'>
+                                {/* BBOX */}
+                                {curr_analysis === 'frameCheck' && bboxes.length > 0 && (
+                                    <div
+                                        style={{
+                                            top: `${(bboxes[bbox_idx][0][1] / videoDimensions.height) * 100}%`,
+                                            left: `${(bboxes[bbox_idx][0][0] / videoDimensions.width) * 100}%`,
+                                            width: `${((bboxes[bbox_idx][0][2] - bboxes[bbox_idx][0][0]) / videoDimensions.width) * 100}%`,
+                                            height: `${((bboxes[bbox_idx][0][3] - bboxes[bbox_idx][0][1]) / videoDimensions.height) * 100}%`,
+                                        }}
+                                        className={` z-10 absolute border-4 rounded ${response_data["frameCheck"]["table_values"][bbox_idx] >= 0.7 ? " border-green-500 " : "border-red-500"} transition-all duration-75 `}
+                                    />
+                                )}
+                                <video
+                                    ref={videoRef}
+                                    src={fileUrl}
+                                    controls={false} // Disable inbuilt video player buttons and interactions
+                                    onError={handleVideoError}
+                                    onTimeUpdate={handleTimeUpdate}
+                                    onLoadedMetadata={handleVideoLoadedMetadata}
+                                    className=" w-fit max-w-3xl h-[60vh] "
+                                />
+                            </div>
+
+                            {
+                                curr_analysis === 'frameCheck' && bboxes.length > 0 && (
+
+                                    <div className={` ${response_data["frameCheck"]["table_values"][bbox_idx] >= 0.7 ? "bg-green-300" : "bg-red-300"} rounded-lg py-1 px-5 `}>
+                                        {
+                                            response_data["frameCheck"]["table_values"][bbox_idx] >= 0.7 ?
+                                                "Current frame seems ok"
+                                                :
+                                                "Current frame seems suspicious"
+                                        }
+                                    </div>
+                                )
+                            }
                         </div>
 
                     </div>
