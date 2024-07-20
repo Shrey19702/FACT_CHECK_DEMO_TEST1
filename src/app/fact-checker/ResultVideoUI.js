@@ -141,7 +141,9 @@ const ResultsVideoUI = ({ response_data, fileUrl, file_metadata, analysisTypes, 
         const newTime = (event.target.value * duration) / 100;
         videoRef.current.currentTime = newTime;
         setCurrentTime(newTime);
-        set_bbox_idx(Math.floor(newTime * 50 / duration));
+        let new_idx = Math.floor(newTime * 50 / duration)
+        // have a fixed 50 frames (0-49),
+        set_bbox_idx(new_idx>=50? 49 : new_idx);
     };
 
     const handleTimeUpdate = () => {
@@ -152,11 +154,9 @@ const ResultsVideoUI = ({ response_data, fileUrl, file_metadata, analysisTypes, 
 
         setCurrentTime(videoRef.current.currentTime);
         //bbox update
-        set_bbox_idx(Math.floor(videoRef.current.currentTime * 50 / duration));
-
-        // if(Math.floor(videoRef.current.currentTime*50/duration) >= (bbox_idx+1)*(duration/50) && bbox_idx!==49){
-        //     set_bbox_idx(bbox_idx+1);
-        // }
+        //ensure it doesnt go to 50
+        let new_idx = Math.floor(videoRef.current.currentTime * 50 / duration)
+        set_bbox_idx(new_idx>=50? 49: new_idx);
     };
 
     const formatTime = (time) => {
