@@ -15,6 +15,7 @@ const ResultsVideoUI = ({ response_data, fileUrl, file_metadata, analysisTypes, 
     const [bbox_idx, set_bbox_idx] = useState(0);
     const [videoDimensions, setVideoDimensions] = useState({ width: 0, height: 0 });
     const bboxes = response_data?.frameCheck?.bboxes || [];
+    const total_frames = response_data?.frameCheck?.table_idx.length || 0;
 
     const [duration, setDuration] = useState(0);
 
@@ -141,9 +142,9 @@ const ResultsVideoUI = ({ response_data, fileUrl, file_metadata, analysisTypes, 
         const newTime = (event.target.value * duration) / 100;
         videoRef.current.currentTime = newTime;
         setCurrentTime(newTime);
-        let new_idx = Math.floor(newTime * 50 / duration)
-        // have a fixed 50 frames (0-49),
-        set_bbox_idx(new_idx>=50? 49 : new_idx);
+        let new_idx = Math.floor(newTime * total_frames / duration)
+        // we have fixed frames (0-last_frame),
+        set_bbox_idx(new_idx>=total_frames? total_frames-1 : new_idx);
     };
 
     const handleTimeUpdate = () => {
@@ -154,9 +155,9 @@ const ResultsVideoUI = ({ response_data, fileUrl, file_metadata, analysisTypes, 
 
         setCurrentTime(videoRef.current.currentTime);
         //bbox update
-        //ensure it doesnt go to 50
-        let new_idx = Math.floor(videoRef.current.currentTime * 50 / duration)
-        set_bbox_idx(new_idx>=50? 49: new_idx);
+        //ensure it doesnt exceed total frames
+        let new_idx = Math.floor(videoRef.current.currentTime * total_frames / duration)
+        set_bbox_idx(new_idx>=total_frames? total_frames-1: new_idx);
     };
 
     const formatTime = (time) => {
