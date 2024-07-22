@@ -54,8 +54,14 @@ const ResultsVideoUI = ({ response_data, fileUrl, file_metadata, analysisTypes, 
 
                     {
                         label: "Probablility of tampering (-ve value deems suspicious)",
-                        data: response_data['frameCheck'].table_values,
-                        backgroundColor: response_data['frameCheck'].table_values.map((val, idx) => { return val >= 0.7 ? "rgba(0,255,0,0.2)" : "rgba(255,0,0,0.2)" }),
+                        data: response_data['frameCheck'].table_values.map((val, idx)=>{
+                            return typeof(val) === "boolean"? 0.7: val
+                        }),
+                        backgroundColor: response_data['frameCheck'].table_values.map((val, idx) => {
+                            if (typeof(val) === 'boolean')
+                                return "rgba(100,100,100,0.2)"
+                            return val >= 0.7 ? "rgba(0,255,0,0.2)" : "rgba(255,0,0,0.2)" 
+                        }),
                         // borderColor: response_data['frameCheck'].table_values.map((val, idx) => { return val >= 0 ? "rgba(0,255,0,0.3)" : "rgba(255,0,0,0.3)" }),
                         // borderWidth: 0.75,
                         barPercentage: 1,
@@ -73,7 +79,9 @@ const ResultsVideoUI = ({ response_data, fileUrl, file_metadata, analysisTypes, 
                             below: "rgba(255,0,0,0.3)"    // below the origin
                         },
                         lineTension: 0.4,
-                        data: response_data['frameCheck'].table_values,
+                        data: response_data['frameCheck'].table_values.filter((val, idx)=>{
+                            return typeof(val) !== "boolean"
+                        }),
                         borderWidth: 1,
 
                     },
@@ -379,7 +387,7 @@ const ResultsVideoUI = ({ response_data, fileUrl, file_metadata, analysisTypes, 
                         <div className='relative w-full flex flex-col items-center justify-center'>
                             <div className='relative'>
                                 {/* BBOX */}
-                                {curr_analysis === 'frameCheck' && bboxes.length > 0 && (
+                                {curr_analysis === 'frameCheck' && bboxes.length > 0 && typeof(bboxes[bbox_idx])!=="boolean" && (
                                     <div
                                         style={{
                                             top: `${(bboxes[bbox_idx][0][1] / videoDimensions.height) * 100}%`,
@@ -402,7 +410,7 @@ const ResultsVideoUI = ({ response_data, fileUrl, file_metadata, analysisTypes, 
                             </div>
 
                             {
-                                curr_analysis === 'frameCheck' && bboxes.length > 0 && (
+                                curr_analysis === 'frameCheck' && bboxes.length > 0 && typeof(bboxes[bbox_idx])!=="boolean" && (
 
                                     <div className={` ${response_data["frameCheck"]["table_values"][bbox_idx] >= 0.7 ? "bg-green-300" : "bg-red-300"} rounded-lg py-1 px-5 `}>
                                         {
