@@ -6,6 +6,24 @@ function LineChart({ chartData }) {
   const options = {
     maintainAspectRatio: false,
     responsive: true,
+    
+    //disbaling animation
+    animation: false, // disables all animations
+    animations: {
+
+      colors: false, // disables animation defined by the collection of 'colors' properties
+      x: false, // disables animation defined by the 'x' property
+    },
+    transitions: {
+      active: {
+        animation: {
+          // disables the animation for 'active' mode
+          duration: 0
+        }
+      }
+    },
+
+    
     scales: {
       x: {
         position: 'top'

@@ -172,7 +172,7 @@ const Form = ({ user_data, set_user_data, response_data, set_res_data, fileUrl, 
 
             set_file_metadata({
                 name: file.name,
-                size: file.size,
+                size: humanFileSize(file.size),
                 type: file.type
             });
             set_res_data(res_data);

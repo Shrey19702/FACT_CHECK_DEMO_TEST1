@@ -1,5 +1,6 @@
 "use client"
 
+// import outfit_font from "Outfit.ttf"
 import ResultsVideoUI from './ResultVideoUI';
 import ResultsAudioUI from './ResultAudioUI';
 import Form from './Form';
@@ -8,9 +9,13 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { user_logout } from '@/utils/data_fetch';
 
-import generatePDF from 'react-to-pdf';
+// import generatePDF from 'react-to-pdf';
+
 
 const VideoAnalysisForm = ({ user }) => {
+
+    const test_ref = useRef(null);
+    const test_result_ref = useRef(null);
 
     const pdfRef = useRef(null);
 
@@ -43,7 +48,7 @@ const VideoAnalysisForm = ({ user }) => {
             {/* NAVBAR */}
             <div className='fixed z-50 top-0 bg-white  shadow flex items-center gap-10 w-full justify-between px-16 py-2'>
                 <div className=' text-primary w-full text-xl font-bold flex justify-start items-center gap-3'>
-                    <Image src={'/logo.svg'} width={30} height={20} alt="LOGO" />
+                    <Image ref={test_ref} src={'/logo.svg'} width={30} height={20} alt="LOGO" />
                     Contrails AI
                 </div>
 
@@ -83,50 +88,24 @@ const VideoAnalysisForm = ({ user }) => {
                 </div>
             </div>
 
+
             {/* <SidePanel user_data={user_data}  handle_newCheck={handle_newCheck}/> */}
             <div className=" bg-white  px-10 min-h-[94vh] pt-16 pb-10 ">
-
-                {/* TITLE */}
-                <div className=' flex w-full justify-between items-end'>
-                    <h2 className="text-3xl font-semibold px-5 pt-3 py-6">Manipulation Detection</h2>
-                    {
-                        fileUrl &&
-                        <div className=' flex gap-7 items-center '>
-                            {/* NEW ANALYSIS */}
-                            <div onClick={handle_newCheck} className=' flex items-center gap-2 cursor-pointer text-lg h-fit px-5 py-2 my-6 rounded-lg shadow-primary shadow'>
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                                </svg>
-
-                                New Analysis
-                            </div>
-
-                            {/* PDF EXPORT */}
-                            <div
-                                onClick={() => { generatePDF(pdfRef, { filename: 'file_analysis.pdf' }) }}
-                                className=' flex items-center gap-2 cursor-pointer text-lg h-fit px-5 py-2 my-6 rounded-lg shadow-primary shadow '
-                            >
-                                Export Report
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
-                                </svg>
-                            </div>
-                        </div>
-                    }
-                </div>
-
                 {
                     !fileUrl &&
-                    <Form
-                        user_data={user_data}
-                        set_user_data={set_user_data}
-                        response_data={response_data}
-                        set_res_data={set_res_data}
-                        fileUrl={fileUrl}
-                        setfileUrl={setfileUrl}
-                        set_file_metadata={set_file_metadata}
-                        set_chosen_analysis={set_chosen_analysis}
-                    />
+                    <>
+                        <h2 className=" w-full text-3xl font-semibold px-5 pt-3 py-6">Manipulation Detection</h2>
+                        <Form
+                            user_data={user_data}
+                            set_user_data={set_user_data}
+                            response_data={response_data}
+                            set_res_data={set_res_data}
+                            fileUrl={fileUrl}
+                            setfileUrl={setfileUrl}
+                            set_file_metadata={set_file_metadata}
+                            set_chosen_analysis={set_chosen_analysis}
+                        />
+                    </>
                 }
 
                 {/* SHOW RESULT */}
@@ -137,6 +116,7 @@ const VideoAnalysisForm = ({ user }) => {
                         file_metadata={file_metadata}
                         analysisTypes={chosen_analysis}
                         pdfRef={pdfRef}
+                        handle_newCheck={handle_newCheck}
                     />
                 }
                 {fileUrl && file_metadata.type.split("/")[0] === "audio" &&
@@ -150,6 +130,7 @@ const VideoAnalysisForm = ({ user }) => {
                 }
             </div>
 
+            {/* ERROR related messages */}
             {
                 response_data.message !== undefined
                 &&
