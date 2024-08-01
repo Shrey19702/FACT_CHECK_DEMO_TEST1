@@ -58,7 +58,7 @@ const VideoAnalysisForm = ({ user }) => {
                         <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm3 0h.008v.008H18V10.5Zm-12 0h.008v.008H6V10.5Z" />
                         </svg> */}
                         <span>Tokens:</span>
-                        <span>{user_data.tokens}</span>
+                        <span>{user_data.tokens ? user_data.tokens : "🚫"}</span>
                     </div>
 
                     <div onClick={() => { set_show_user_options(!show_user_options) }} className=''>
@@ -88,49 +88,70 @@ const VideoAnalysisForm = ({ user }) => {
                 </div>
             </div>
 
+            {/* ERROR OCCURED IN GETTING USER */}
+            {
+                user.error !== undefined &&
+                <div className=" min-h-[94vh] flex flex-col mx-20 py-32 items-center ">
+                    <div className=" w-full text-2xl bg-red-400 px-3 rounded-t">
+                        ERROR:
+                    </div>
+                    <div className=" bg-red-300 w-full px-3 text-xl pb-3 pt-2 rounded-b ">
+                        {user.error}
+                        <br />
+                        <div className=" text-base pt-3">
+                            contact to report this issue
+                        </div>
+                    </div>
+                </div>
+            }
+
 
             {/* <SidePanel user_data={user_data}  handle_newCheck={handle_newCheck}/> */}
-            <div className=" bg-white  px-10 min-h-[94vh] pt-16 pb-10 ">
-                {
-                    !fileUrl &&
-                    <>
-                        <h2 className=" w-full text-3xl font-semibold px-5 pt-3 py-6">Manipulation Detection</h2>
-                        <Form
-                            user_data={user_data}
-                            set_user_data={set_user_data}
+            {
+                user.error === undefined &&
+
+                < div className=" bg-white  px-10 min-h-[94vh] pt-16 pb-10 ">
+                    {
+                        !fileUrl &&
+                        <>
+                            <h2 className=" w-full text-3xl font-semibold px-5 pt-3 py-6">Manipulation Detection</h2>
+                            <Form
+                                user_data={user_data}
+                                set_user_data={set_user_data}
+                                response_data={response_data}
+                                set_res_data={set_res_data}
+                                fileUrl={fileUrl}
+                                setfileUrl={setfileUrl}
+                                set_file_metadata={set_file_metadata}
+                                set_chosen_analysis={set_chosen_analysis}
+                            />
+                        </>
+                    }
+
+                    {/* SHOW RESULT */}
+                    {fileUrl && file_metadata.type.split("/")[0] === "video" &&
+                        <ResultsVideoUI
                             response_data={response_data}
-                            set_res_data={set_res_data}
                             fileUrl={fileUrl}
-                            setfileUrl={setfileUrl}
-                            set_file_metadata={set_file_metadata}
-                            set_chosen_analysis={set_chosen_analysis}
+                            file_metadata={file_metadata}
+                            analysisTypes={chosen_analysis}
+                            pdfRef={pdfRef}
+                            handle_newCheck={handle_newCheck}
                         />
-                    </>
-                }
+                    }
+                    {fileUrl && file_metadata.type.split("/")[0] === "audio" &&
+                        <ResultsAudioUI
+                            response_data={response_data}
+                            fileUrl={fileUrl}
+                            file_metadata={file_metadata}
+                            handle_newCheck={handle_newCheck}
+                        />
+                    }
+                </div>
 
-                {/* SHOW RESULT */}
-                {fileUrl && file_metadata.type.split("/")[0] === "video" &&
-                    <ResultsVideoUI
-                        response_data={response_data}
-                        fileUrl={fileUrl}
-                        file_metadata={file_metadata}
-                        analysisTypes={chosen_analysis}
-                        pdfRef={pdfRef}
-                        handle_newCheck={handle_newCheck}
-                    />
-                }
-                {fileUrl && file_metadata.type.split("/")[0] === "audio" &&
-                    <ResultsAudioUI
-                        response_data={response_data}
-                        fileUrl={fileUrl}
-                        file_metadata={file_metadata}
-                        analysisTypes={chosen_analysis}
-                        pdfRef={pdfRef}
-                    />
-                }
-            </div>
+            }
 
-            {/* ERROR related messages */}
+            {/* SHOW ERROR related pop-up messages */}
             {
                 response_data.message !== undefined
                 &&
@@ -163,7 +184,7 @@ const VideoAnalysisForm = ({ user }) => {
                 </Link>
                 ©2024
             </div>
-        </div>
+        </div >
     );
 };
 

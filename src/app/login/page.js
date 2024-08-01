@@ -12,6 +12,7 @@ export default async function Login({ searchParams }) {
   const { data: { user } } = await supabase.auth.getUser();
 
   if (user) {
+    console.log("user logged in but went to login page");
     return redirect("/fact-checker");
   }
 
@@ -25,6 +26,7 @@ export default async function Login({ searchParams }) {
     });
 
     if (error) {
+      console.log(error);
       return redirect("/login?message=Could not authenticate user");
     }
     return redirect("/fact-checker");
@@ -45,10 +47,11 @@ export default async function Login({ searchParams }) {
     });
 
     if (error) {
+      console.log(error);
       return redirect("/login?message=Could not authenticate user");
     }
 
-    return redirect("/login?message=Check email to continue sign in process");
+    return redirect("/login?message=Check email to continue sign-in process");
   };
 
   const handleGoogleSignIn = async () => {
@@ -61,12 +64,32 @@ export default async function Login({ searchParams }) {
       options: {
         redirectTo: `${origin}/auth/callback`,
       },
-    })
+    });
+
+    if (error) {
+      return redirect("/login?message=Could not authenticate user");
+    }
 
     if (data.url) {
-      redirect(data.url) // use the redirect API for your server framework
+      redirect(data.url); // use the redirect API for your server framework
     }
-  }
+  };
+
+  const forgot_password = async ({ email }) => {
+    "use server";
+    const supabase = createClient();
+    const origin = headers().get("origin");
+
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${origin}/auth/update-password`,
+    })
+
+    if (error) {
+      console.log(error);
+      return redirect("/login?message=Could not verify user");
+    }
+    // return redirect("/fact-checker");
+  };
 
   return (
     <>
@@ -87,6 +110,7 @@ export default async function Login({ searchParams }) {
           signIn={signIn}
           signUp={signUp}
           handleGoogleSignIn={handleGoogleSignIn}
+          forgot_password={forgot_password}
           eventInfo={searchParams}
         />
 

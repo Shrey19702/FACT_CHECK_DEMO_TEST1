@@ -186,9 +186,9 @@ const ResultsVideoUI = ({ response_data, fileUrl, file_metadata, analysisTypes, 
         const seconds = Math.floor(time % 60);
         return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
     };
-    
+
     const handle_pdf_tester = async () => {
-        
+
         set_taking_ss(true);
         // Wait for the state update to be applied
         await new Promise(resolve => {
@@ -453,7 +453,7 @@ const ResultsVideoUI = ({ response_data, fileUrl, file_metadata, analysisTypes, 
                 {/* ANALYSIS */}
                 <div className=" relative w-full flex flex-col lg:gap-3 items-center bg-slate-50 rounded-lg overflow-hidden ">
 
-                    <div className={` ${taking_ss? '' : 'hidden'} absolute z-20 w-full h-full bg-black/90 backdrop-blur-2xl text-white `}>
+                    <div className={` ${taking_ss ? '' : 'hidden'} absolute z-20 w-full h-full bg-black/90 backdrop-blur-2xl text-white `}>
 
                         <div className=' flex flex-col justify-center items-center gap-4 text-2xl my-40 '>
                             <div role="status">
@@ -734,12 +734,19 @@ const ResultsVideoUI = ({ response_data, fileUrl, file_metadata, analysisTypes, 
                             {
                                 chartData !== null &&
                                 <>
-                                    <div ref={audio_graph_Ref} className={` ${curr_analysis === 'audioAnalysis' ? '' : 'hidden'} bg-white max-h-64 w-full px-3 mt-2 rounded-md`}>
-                                        <LineChart chartData={chartData["audioAnalysis"]} />
-                                    </div>
-                                    <div ref={frame_graph_Ref} className={` ${curr_analysis === 'frameCheck' ? '' : 'hidden'} bg-white max-h-64 w-full px-3 mt-2 rounded-md`}>
-                                        <LineChart chartData={chartData["frameCheck"]} />
-                                    </div>
+                                    {
+                                        chartData["audioAnalysis"] !== undefined &&
+
+                                        <div ref={audio_graph_Ref} className={` ${curr_analysis === 'audioAnalysis' ? '' : 'hidden'} bg-white max-h-64 w-full px-3 mt-2 rounded-md`}>
+                                            <LineChart chartData={chartData["audioAnalysis"]} />
+                                        </div>
+                                    }
+                                    {
+                                        chartData["frameCheck"] !== undefined &&
+                                        <div ref={frame_graph_Ref} className={` ${curr_analysis === 'frameCheck' ? '' : 'hidden'} bg-white max-h-64 w-full px-3 mt-2 rounded-md`}>
+                                            <LineChart chartData={chartData["frameCheck"]} />
+                                        </div>
+                                    }
                                 </>
                             }
                         </div>

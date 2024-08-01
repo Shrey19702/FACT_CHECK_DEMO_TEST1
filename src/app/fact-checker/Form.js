@@ -431,12 +431,20 @@ const Form = ({ user_data, set_user_data, response_data, set_res_data, fileUrl, 
                         {cost} Tokens
                     </div>
 
+                    {
+                        cost >user_data.tokens &&
+                        <div className=' text-sm text-red-700 text-center '>
+                            Insufficient tokens !! <br/> (contact for more tokens)
+                        </div>
+                    }
+
                     {/* SUBMIT AND LOADING */}
                     <div className=' flex items-center gap-10'>
                         <button
-                            aria-disabled={loading}
+                            // aria-disabled={loading || (cost>user_data.tokens)}
+                            disabled={(loading || (cost>user_data.tokens))}
                             type="submit"
-                            className="outline-none bg-primary hover:bg-primary/90 hover:shadow-md text-white font-semibold py-3 px-6 rounded-lg w-fit text-xl transition-all duration-300"
+                            className=" disabled:cursor-no-drop disabled:bg-primary/70 outline-none bg-primary hover:bg-primary/90 hover:shadow-md text-white font-semibold py-3 px-6 rounded-lg w-fit text-xl transition-all duration-300"
                         >
                             Submit
                         </button>
