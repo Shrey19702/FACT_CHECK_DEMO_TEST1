@@ -83,21 +83,21 @@ export const get_user_data = async () => {
     }
     const user_id = user.id;
     //FETCH TOKENS
-
-    const { token_data, error } = await supabase
-        .from('Tokens')
-        .select('token_amount')
-        .eq('id', user_id);
-
+    
+    const { data: [token_data], error } = await supabase
+    .from('Tokens')
+    .select('token_amount')
+    .eq('id', user_id);
+    
     // data =  [ { token_amount: 500 } ]
-    console.log()
-    if (error || token_data===undefined) {
+    console.log(token_data, error, user_id)
+    if (error || token_data===undefined ) {
         
         error!==null?console.error("ERROR IN GETTING USER'S TOKENS: ", error): console.error("error in getting user tokens: user not defined in tokens db");
         return {error: "error in getting user tokens"}
     }
 
-    const user_data = { ...user.user_metadata, "id": user_id, tokens: token_data[0].token_amount }
+    const user_data = { ...user.user_metadata, "id": user_id, tokens: token_data.token_amount }
 
     return user_data;
 }
