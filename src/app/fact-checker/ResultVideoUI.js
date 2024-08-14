@@ -292,121 +292,127 @@ const ResultsVideoUI = ({ response_data, fileUrl, file_metadata, analysisTypes, 
 
         curr_y += 30 / 72;
 
-        //AUDIO ANALYSIS START
-        fontSize = 16;
-        doc.setFontSize(fontSize);
-        doc.text("Audio Analysis", curr_x, curr_y);
+        if (response_data["audioAnalysis"] !== undefined) {
 
-        curr_y += fontSize / 72 + 6 / 72;
+            //AUDIO ANALYSIS START
+            fontSize = 16;
+            doc.setFontSize(fontSize);
+            doc.text("Audio Analysis", curr_x, curr_y);
 
-        set_curr_analysis("audioAnalysis");
-        // Wait for the state update to be applied
-        await new Promise(resolve => {
-            setTimeout(resolve, 100);
-        });
+            curr_y += fontSize / 72 + 6 / 72;
 
-        fontSize = 12;
-        doc.setFontSize(fontSize);
+            set_curr_analysis("audioAnalysis");
+            // Wait for the state update to be applied
+            await new Promise(resolve => {
+                setTimeout(resolve, 100);
+            });
 
-        const audio_result = (response_data["audioAnalysis"].result).toFixed(3);
+            fontSize = 12;
+            doc.setFontSize(fontSize);
 
-        if (audio_result >= -1.3) {
-            doc.text("The audio analysis detected no manipulation", curr_x, curr_y);
+            const audio_result = (response_data["audioAnalysis"].result).toFixed(3);
+
+            if (audio_result >= -1.3) {
+                doc.text("The audio analysis detected no manipulation", curr_x, curr_y);
+            }
+            else {
+                doc.text("The audio analysis detected manipulation", curr_x, curr_y);
+            }
+            curr_y += fontSize / 72 + 6 / 72;
+
+            doc.text("Overall Audio result: ", curr_x, curr_y);
+
+            curr_x += 110 / 72;
+            doc.setFont("Outfit", "bold");
+
+            audio_result >= -1.3 ? doc.setTextColor(5, 160, 20) : doc.setTextColor(200, 30, 30);
+            doc.text(` ${audio_result} `, curr_x, curr_y);
+
+            curr_x = mx;
+            curr_y += fontSize / 72 + 3 / 72;
+
+            fontSize = 9;
+            doc.setFontSize(fontSize);
+            doc.setTextColor(0, 0, 0);
+            doc.setFont("Outfit", "normal");
+
+            doc.text("result value less than -1.3 deems it suspicious of manipulation", curr_x, curr_y);
+            curr_y += 2 * fontSize / 72;
+
+            const audio_result_element = audio_graph_Ref.current;
+            let audio_result_canvas = await html2canvas(audio_result_element);
+            const audio_result_imgData = audio_result_canvas.toDataURL('image/png');
+            const aud_res_img_w = 550 / 72;
+            const aud_res_img_h = (audio_result_canvas.height * aud_res_img_w) / audio_result_canvas.width;
+            doc.addImage(audio_result_imgData, 'PNG', curr_x, curr_y, aud_res_img_w, aud_res_img_h, '', 'FAST');
+
+            curr_x = mx;
+            curr_y += aud_res_img_h + 20 / 72; //gap of 20 px
+
+            doc.setDrawColor(150, 150, 150);
+            doc.setLineWidth(1 / 72);
+            doc.line(curr_x, curr_y, curr_x + 550 / 72, curr_y);
+
+            curr_y += 30 / 72;
         }
-        else {
-            doc.text("The audio analysis detected manipulation", curr_x, curr_y);
+
+        if (response_data["frameCheck"] !== undefined) {
+
+            //FRAME ANALYSIS START
+            fontSize = 16;
+            doc.setFontSize(fontSize);
+            doc.text("Frame Analysis", curr_x, curr_y);
+
+            curr_y += fontSize / 72 + 6 / 72;
+
+            set_curr_analysis("frameCheck");
+            // Wait for the state update to be applied
+            await new Promise(resolve => {
+                setTimeout(resolve, 100);
+            });
+
+            fontSize = 12;
+            doc.setFontSize(fontSize);
+
+            const frame_result = (response_data["frameCheck"].result).toFixed(3);
+
+            if (frame_result >= 0.7) {
+                doc.text("The video frames analysis detected no manipulation", curr_x, curr_y);
+            }
+            else {
+                doc.text("The video frames analysis detected manipulation", curr_x, curr_y);
+            }
+            curr_y += fontSize / 72 + 6 / 72;
+
+            doc.text("Overall Frame Result: ", curr_x, curr_y);
+
+            curr_x += 120 / 72;
+            doc.setFont("Outfit", "bold");
+
+            frame_result >= -1.3 ? doc.setTextColor(5, 160, 20) : doc.setTextColor(200, 30, 30);
+            doc.text(` ${frame_result} `, curr_x, curr_y);
+
+            curr_x = mx;
+            curr_y += fontSize / 72 + 3 / 72;
+
+            fontSize = 9;
+            doc.setFontSize(fontSize);
+            doc.setTextColor(0, 0, 0);
+            doc.setFont("Outfit", "normal");
+
+            doc.text("result value less than 0.7 deems it suspicious of manipulation", curr_x, curr_y);
+            curr_y += 2 * fontSize / 72;
+
+            const frame_result_element = frame_graph_Ref.current;
+            let frame_result_canvas = await html2canvas(frame_result_element);
+            const frame_result_imgData = frame_result_canvas.toDataURL('image/png');
+            const frm_res_img_w = 550 / 72;
+            const frm_res_img_h = (frame_result_canvas.height * frm_res_img_w) / frame_result_canvas.width;
+            doc.addImage(frame_result_imgData, 'PNG', curr_x, curr_y, frm_res_img_w, frm_res_img_h, '', 'FAST');
+
+            curr_x = mx;
+            curr_y += frm_res_img_h + 20 / 72; //gap of 20 px
         }
-        curr_y += fontSize / 72 + 6 / 72;
-
-        doc.text("Overall Audio result: ", curr_x, curr_y);
-
-        curr_x += 110 / 72;
-        doc.setFont("Outfit", "bold");
-
-        audio_result >= -1.3 ? doc.setTextColor(5, 160, 20) : doc.setTextColor(200, 30, 30);
-        doc.text(` ${audio_result} `, curr_x, curr_y);
-
-        curr_x = mx;
-        curr_y += fontSize / 72 + 3 / 72;
-
-        fontSize = 9;
-        doc.setFontSize(fontSize);
-        doc.setTextColor(0, 0, 0);
-        doc.setFont("Outfit", "normal");
-
-        doc.text("result value less than -1.3 deems it suspicious of manipulation", curr_x, curr_y);
-        curr_y += 2 * fontSize / 72;
-
-        const audio_result_element = audio_graph_Ref.current;
-        let audio_result_canvas = await html2canvas(audio_result_element);
-        const audio_result_imgData = audio_result_canvas.toDataURL('image/png');
-        const aud_res_img_w = 550 / 72;
-        const aud_res_img_h = (audio_result_canvas.height * aud_res_img_w) / audio_result_canvas.width;
-        doc.addImage(audio_result_imgData, 'PNG', curr_x, curr_y, aud_res_img_w, aud_res_img_h, '', 'FAST');
-
-        curr_x = mx;
-        curr_y += aud_res_img_h + 20 / 72; //gap of 20 px
-
-        doc.setDrawColor(150, 150, 150);
-        doc.setLineWidth(1 / 72);
-        doc.line(curr_x, curr_y, curr_x + 550 / 72, curr_y);
-
-        curr_y += 30 / 72;
-
-        //FRAME ANALYSIS START
-        fontSize = 16;
-        doc.setFontSize(fontSize);
-        doc.text("Frame Analysis", curr_x, curr_y);
-
-        curr_y += fontSize / 72 + 6 / 72;
-
-        set_curr_analysis("frameCheck");
-        // Wait for the state update to be applied
-        await new Promise(resolve => {
-            setTimeout(resolve, 100);
-        });
-
-        fontSize = 12;
-        doc.setFontSize(fontSize);
-
-        const frame_result = (response_data["frameCheck"].result).toFixed(3);
-
-        if (frame_result >= 0.7) {
-            doc.text("The video frames analysis detected no manipulation", curr_x, curr_y);
-        }
-        else {
-            doc.text("The video frames analysis detected manipulation", curr_x, curr_y);
-        }
-        curr_y += fontSize / 72 + 6 / 72;
-
-        doc.text("Overall Frame Result: ", curr_x, curr_y);
-
-        curr_x += 120 / 72;
-        doc.setFont("Outfit", "bold");
-
-        frame_result >= -1.3 ? doc.setTextColor(5, 160, 20) : doc.setTextColor(200, 30, 30);
-        doc.text(` ${frame_result} `, curr_x, curr_y);
-
-        curr_x = mx;
-        curr_y += fontSize / 72 + 3 / 72;
-
-        fontSize = 9;
-        doc.setFontSize(fontSize);
-        doc.setTextColor(0, 0, 0);
-        doc.setFont("Outfit", "normal");
-
-        doc.text("result value less than 0.7 deems it suspicious of manipulation", curr_x, curr_y);
-        curr_y += 2 * fontSize / 72;
-
-        const frame_result_element = frame_graph_Ref.current;
-        let frame_result_canvas = await html2canvas(frame_result_element);
-        const frame_result_imgData = frame_result_canvas.toDataURL('image/png');
-        const frm_res_img_w = 550 / 72;
-        const frm_res_img_h = (frame_result_canvas.height * frm_res_img_w) / frame_result_canvas.width;
-        doc.addImage(frame_result_imgData, 'PNG', curr_x, curr_y, frm_res_img_w, frm_res_img_h, '', 'FAST');
-
-        curr_x = mx;
-        curr_y += frm_res_img_h + 20 / 72; //gap of 20 px
 
         set_taking_ss(false);
         await new Promise(resolve => {
