@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 
 const Login_block = ({ signIn, signUp, handleGoogleSignIn, forgot_password, eventInfo }) => {
 
-    console.log(eventInfo);
+    // console.log(eventInfo);
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');

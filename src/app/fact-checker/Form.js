@@ -8,11 +8,14 @@ import { PiWaveformBold } from "react-icons/pi";
 
 const Form = ({ user_data, set_user_data, response_data, set_res_data, fileUrl, setfileUrl, set_file_metadata, set_chosen_analysis }) => {
 
+    // input (file) ref
     const fileInputRef = useRef(null);
 
     const [tempfileUrl, set_tempFileUrl] = useState(null);
+    //loading for the response data 
     const [loading, setLoading] = useState(false);
 
+    //cost of the selected analysis
     const [cost, setcost] = useState(0);
 
     // FORM DATA
@@ -23,6 +26,7 @@ const Form = ({ user_data, set_user_data, response_data, set_res_data, fileUrl, 
     });
     const [uploadType, setUploadType] = useState("");
 
+    //convert data to human filesize for metadata
     const humanFileSize = (bytes, si = true, dp = 2) => {
         const thresh = si ? 1000 : 1024;
 
@@ -92,54 +96,86 @@ const Form = ({ user_data, set_user_data, response_data, set_res_data, fileUrl, 
         setAnalysisTypes(new_analysis);
     };
 
-    // SUBMIT and get result
+    // -------------------->>SUBMIT and GET RESULT
+
+    const upload_file_s3 = async () => {
+        try {
+            const res = await fetch('/api/upload', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(
+                    {
+                        input_request: {
+                            'upload_type': uploadType,
+                            'analysis_types': analysisTypes
+                        },
+                        file_metadata: {
+                            name: file.name,
+                            size: humanFileSize(file.size),
+                            type: file.type
+                        }
+                    }
+                ),
+            });
+            if (!res.ok) throw new Error('Failed to get signed URL');
+
+            const { signedUrl } = await res.json();
+
+            const res_s3 = await fetch(signedUrl, {
+                method: 'PUT',
+                body: file,
+                headers: { 'Content-Type': file.type },
+            });
+            alert('File Uploaded')
+
+        } catch (error) {
+            console.error('Error uploading file:', error);
+            alert('Failed to upload file');
+        }
+    }
+
     const get_server_response = async () => {
-        // console.log(JSON.stringify(analysisTypes));
         //Form Submittion
         try {
-            const formData = new FormData();
-            formData.append('file', file);
-            formData.append('analysis_types', JSON.stringify(analysisTypes));
-            formData.append('upload_type', JSON.stringify(uploadType));
+            // const formData = new FormData();
+            // formData.append('file', file);
+            // formData.append('analysis_types', JSON.stringify(analysisTypes));
+            // formData.append('upload_type', JSON.stringify(uploadType));
 
             const user_id = user_data.id
             const new_token_amount = user_data.tokens - cost
 
             let res_data = {};
 
-            //get user session
-            const supabase = createClient();
-            const { data: { session }, error } = await supabase.auth.getSession();
-            if (error) {
-                res_data = { message: "unable to get user auth tokens" };
-                set_res_data(res_data);
-                set_chosen_analysis(analysisTypes);
-                setLoading(false);
-                return;
-            }
+            // STORE MEDIA FILE IN S3
+            await upload_file_s3();
+            // NEXT STEP -------------> WAIT FOR RESPONSE
+            res_data = { "uploaded": true }
 
-            const IP = process.env.NEXT_PUBLIC_SERVER_IP;
-            const token = session?.access_token;
-            //send request to backend
-            try {
-                const options = {
-                    method: 'POST',
-                    body: formData,
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    },
-                };
-                const response = await fetch(`${IP}/api/generate-result`, options);
-                res_data = await response.json();
-            }
-            catch (error) {
-                res_data = { message: "ML model is currently not available" }
-                set_res_data(res_data);
-                set_chosen_analysis(analysisTypes);
-                setLoading(false);
-                return;
-            }
-            
+            // // REQUEST TO ML MODEL
+            // const IP = process.env.NEXT_PUBLIC_SERVER_IP;
+            // const token = session?.access_token;
+            // //send request to backend
+            // try {
+            //     //options for the request
+            //     const options = {
+            //         method: 'POST',
+            //         body: formData,
+            //         headers: {
+            //             'Authorization': `Bearer ${token}`
+            //         },
+            //     };
+            //     const response = await fetch(`${IP}/api/generate-result`, options);
+            //     res_data = await response.json();
+            // }
+            // catch (error) {
+            //     res_data = { message: "ML model is currently not available" }
+            //     set_res_data(res_data);
+            //     set_chosen_analysis(analysisTypes);
+            //     setLoading(false);
+            //     return;
+            // }
+
             if (res_data.message !== undefined) {
                 console.log("ERROR FROM SERVER: ", res_data);
                 res_data = { message: "Server had an issue" };
@@ -344,7 +380,7 @@ const Form = ({ user_data, set_user_data, response_data, set_res_data, fileUrl, 
 
                                         <div className='w-fit min-w-32 absolute z-50 -translate-y-1/2 left-4 -top-5 hover:block group-hover:block hidden overflow-hidden p-1 transition-all '>
                                             <div className=' bg-black/70 text-white  px-4 py-2  rounded-xl rounded-bl-none  backdrop-blur-lg'>
-                                                Analyze audio in the files
+                                                Analyze audio in the file
                                             </div>
                                         </div>
                                     </span>
@@ -432,9 +468,9 @@ const Form = ({ user_data, set_user_data, response_data, set_res_data, fileUrl, 
                     </div>
 
                     {
-                        cost >user_data.tokens &&
+                        cost > user_data.tokens &&
                         <div className=' text-sm text-red-700 text-center '>
-                            Insufficient tokens !! <br/> (contact for more tokens)
+                            Insufficient tokens !! <br /> (contact for more tokens)
                         </div>
                     }
 
@@ -442,7 +478,7 @@ const Form = ({ user_data, set_user_data, response_data, set_res_data, fileUrl, 
                     <div className=' flex items-center gap-10'>
                         <button
                             // aria-disabled={loading || (cost>user_data.tokens)}
-                            disabled={(loading || (cost>user_data.tokens))}
+                            disabled={(loading || (cost > user_data.tokens))}
                             type="submit"
                             className=" disabled:cursor-no-drop disabled:bg-primary/70 outline-none bg-primary hover:bg-primary/90 hover:shadow-md text-white font-semibold py-3 px-6 rounded-lg w-fit text-xl transition-all duration-300"
                         >
