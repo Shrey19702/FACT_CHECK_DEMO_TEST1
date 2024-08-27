@@ -1,15 +1,43 @@
 import { get_user_data } from '@/utils/data_fetch';
-
 import Navbar from '@/components/Navbar';
-import Result_container from "@/app/view/[id]/show_result"
+import Result_container from "@/app/view/[id]/show_result";
+import Verifier_results_container from "@/app/view/[id]/verifier_show_results";
+import { get_result_for_id, verify_case } from "@/utils/data_fetch";
 
-const page = async ()=>{
 
-  const user_data = await get_user_data(); 
+const page = async ({ params }) => {
+  const user_data = await get_user_data();
+  const case_result_data = await get_result_for_id(params.id);
+  // const case_result_data = {}
+
   return (
     <>
-        <Navbar user_data={user_data} />
-        <Result_container user_data={user_data} />
+      <Navbar user_data={user_data} />
+
+      {
+        user_data.verifier ?
+          // VERIFIER BASED
+          <Verifier_results_container res_data={case_result_data} />
+          :
+          <>
+            {/* NORMAL USER */}
+            {
+              case_result_data.status ?
+                <Result_container res_data={case_result_data} />
+                :
+                <>
+                  <div className=' text-xl pt-28 pb-10 px-16'>
+                    <span className=' underline px-2'>
+                      Status:
+                    </span>
+                    <span className=' font-light'>
+                      No Model Response
+                    </span>
+                  </div>
+                </>
+            }
+          </>
+      }
     </>
   );
 }

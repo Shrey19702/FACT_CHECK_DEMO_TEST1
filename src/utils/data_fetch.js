@@ -10,59 +10,6 @@ import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 export const db_updates = async ({ new_token_amount, user_id }) => {
 
     const supabase = createClient();
-
-    //save report
-    // const { data: insertedReports, error: insertError } = await supabase
-    //     .from('reports') // Ensure the table name is correct
-    //     .insert([{ user_id: user_id, data: res_data, file_link: "", name: filename }])
-    //     .select(); //to get the inserted row
-    // if (insertError) {
-    //     console.error("ERROR: ", insertError)
-    //     return { error: "error in creating report" };
-    // }
-
-    // const report_id = insertedReports[0].id;
-
-    // Extract the file from the FormData object
-    // let file;
-
-    // if (JSON.parse(formData.get('uploadType')) === "video") {
-    //     file = formData.get('video');
-    // }
-    // else if (JSON.parse(formData.get('uploadType')) === "audio") {
-    //     file = formData.get('audio');
-    // }
-    // else {
-    //     console.error("No file found in FormData");
-    //     return { error: "No file found in FormData" };
-    // }
-
-    //upload file
-    // const file_path = `${user_id}/${report_id}`;
-    // const { data: upload_data, error: upload_error } = await supabase.storage
-    //     .from(process.env.NEXT_PUBLIC_BUCKET_NAME)
-    //     .upload(file_path, file);
-
-    // if (upload_error) {
-    //     console.error("ERROR: ", upload_error)
-    //     return { error: "error in upload files" }
-    // }
-
-
-    // console.log("Upload data:", upload_data);
-
-    // Update the report with the file link
-    // const file_link = upload_data.path;
-    // const { data: updateData, error: updateError } = await supabase
-    //     .from('reports')
-    //     .update({ file_link: file_link })
-    //     .eq('id', report_id);
-
-    // if (updateError) {
-    //     console.error("ERROR: ", updateError);
-    //     return { error: "Error in updating report with file link" };
-    // }
-
     //update user tokens
     const { token_data, token_error } = await supabase
         .from('Tokens')
@@ -131,24 +78,29 @@ export const get_user_transactions = async (verifier)=>{
         //get data from db and return it 
         transactions_list = await supabase
         .from('Transactions')
-        .select('id,created_at,input_request,file_metadata,status,prediction,verified')
-        .eq('status', true)     
+        .select('id,created_at,input_request,file_metadata,status,prediction')
     }
     else{
         //get data from db and return it 
         transactions_list = await supabase
         .from('Transactions')
-        .select('id,created_at,input_request,file_metadata,status,prediction,verified')
+        .select('id,created_at,input_request,file_metadata,status,prediction')
         .eq('user_id', user.id) 
     }
 
 
     if (transactions_list.error){
-        console.error(error)
+        console.error(transactions_list.error)
         return {
             "error": "error in getting user history"
         }
     }
+    // SORT DATA BY DATE REVERSE ORDER
+    transactions_list.data.sort((x, y)=>{
+        const timex = new Date(x.created_at).getTime()
+        const timey = new Date(y.created_at).getTime()
+        return -(timex-timey)
+    })
     return transactions_list.data;
 }
 
@@ -164,12 +116,9 @@ export const get_result_for_id = async (transaction_id)=>{
     //get data from db and return it 
     const {data, error} = await supabase
     .from('Transactions')
-    .select('id,created_at,input_request,file_metadata,status,verified,models_responses,media_key')
+    .select('id,created_at,input_request,file_metadata,status,verifier_metadata,models_responses,media_key')
     .eq('id', transaction_id) 
     .single()
-
-    //GET S3 media file here
-
 
     if (error){
         console.error(error)
@@ -177,6 +126,7 @@ export const get_result_for_id = async (transaction_id)=>{
             "error": "error in getting user history"
         }
     }
+    //GET S3 media file here
 
     // Generate a signed URL for the media file in S3
     let signedUrl = null;
@@ -195,35 +145,32 @@ export const get_result_for_id = async (transaction_id)=>{
 
     // Add the signed URL to the data object
     data.signedUrl = signedUrl;
-
-    // console.log("got data as : ", data)
     return data;
 }
 
-export const verify_case = async (id) => {
-
+export const verify_case = async (id, metadata) => {
     const supabase = createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
-    if (user === null)
-        return;
+    if (!user) return;
 
-    const data_check = await supabase
-    .from('Transactions')
-    .select('verified')
-    .eq('id', id)
-
-    console.log(data_check)
-
-    console.log(id)
-    // Update the transaction record
+    // console.log('Transaction ID:', id);
+    
     const result = await supabase
         .from('Transactions')
-        .update({ "verified": true, "verifier_id": user.id })
-        .eq('id', id)
-        .select();
-        // Will log the updated data
+        .update({ 
+            status: true,
+            verifier_metadata: { ...metadata, verifier_id: user.id }
+        })
+        .match({ id });
 
-        console.log(result)
-        return null;
+    console.log('Update Result:', result);
+
+    if (result.error) {
+        console.error('Update Error:', result.error);
+        return -1;
+    }
+
+    return 0;
 };
+

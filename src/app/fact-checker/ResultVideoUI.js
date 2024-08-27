@@ -1,5 +1,5 @@
 import LineChart from './LineChart';
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Waveform from './Waveform';
 
 import jsPDF from "jspdf";
@@ -141,9 +141,12 @@ const ResultsVideoUI = ({ response_data, fileUrl, file_metadata, analysisTypes, 
             }
             temp_chart_data["audioAnalysis"] = audio_chart_data
         }
-
         setChartData(temp_chart_data);
     };
+
+    useEffect(()=>{
+        handleVideoLoadedMetadata()
+    }, [response_data])
 
     const handleVideoError = (event) => {
         setVideoError(event.target.error);
@@ -590,6 +593,8 @@ const ResultsVideoUI = ({ response_data, fileUrl, file_metadata, analysisTypes, 
                                 {
                                     // result of all analysis
                                     Object.keys(response_data).map((val, idx) => {
+                                        if(response_data[val]==undefined)
+                                            return
                                         const result = (response_data[val].result).toFixed(3);
                                         let threshold = 0;
                                         if (val === "frameCheck")

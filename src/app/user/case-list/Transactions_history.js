@@ -77,9 +77,7 @@ const Transactions_history = ({verifier}) => {
                                         const time = new Date(val.created_at)
                                         const { analysis_types, upload_type } = val.input_request
                                         const { name } = val.file_metadata
-                                        const verify = val.verified || verifier;
                                         // console.log(analysis_types, uploadType)
-                                        console.log(verify, val.verified)
 
                                         return (
                                             <div key={idx} className=' py-3 border-b-2 pl-7 pr-2 gap-3 grid grid-cols-12 '>
@@ -95,17 +93,17 @@ const Transactions_history = ({verifier}) => {
                                                     {upload_type}
                                                 </span>
                                                 {/* STATUS */}
-                                                <span>
-                                                    {(val.verified) ? "Done" : "Pending"}
+                                                <span className=''>
+                                                    {(val.status) ? "Done" : "Pending"}
                                                 </span>
-                                                <span className={`rounded-full ${val.status ? (verify?(val.prediction ? "bg-green-200" : "bg-red-200"): "") : ""} w-fit h-fit px-4 py-0.5`}>
-                                                    {verify ? (val.prediction ? "Real" : "Fake") : "---"}
+                                                <span className={`rounded-full ${(val.status||verifier) ? (val.prediction ? "bg-green-200" : "bg-red-200") : ""} w-fit h-fit px-4 py-0.5`}>
+                                                    {(val.status||verifier) ? (val.prediction ? "Real" : "Fake") : "---"}
                                                 </span>
                                                 <span className=' col-span-2 flex flex-wrap gap-4'>
                                                     {Object.keys(analysis_types).map((input_type, input_idx) => {
                                                         if (analysis_types[input_type])
                                                             return (
-                                                                <span key={input_idx}>
+                                                                <span key={input_idx} className=' bg-primary/20 rounded-full px-3'>
                                                                     {input_type}
                                                                 </span>
                                                             )
