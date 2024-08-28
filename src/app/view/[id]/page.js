@@ -31,7 +31,7 @@ const page = async ({ params }) => {
                       Status:
                     </span>
                     <span className=' font-light'>
-                      No Model Response
+                      Results are currently not available. <br /> (they will be updated shorty)
                     </span>
                   </div>
                 </>

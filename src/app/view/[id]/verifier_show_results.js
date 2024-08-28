@@ -111,7 +111,7 @@ const Verifier_results_container = ({ res_data }) => {
     }
 
     useEffect(()=>{
-        if( typeof(res_data["verifier_metadata"])==='object' ){
+        if( res_data["verifier_metadata"]!==null ){
             set_verifier_metadata(res_data["verifier_metadata"]);
         }
     }, [])

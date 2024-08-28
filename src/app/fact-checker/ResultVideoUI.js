@@ -27,8 +27,8 @@ const ResultsVideoUI = ({ response_data, fileUrl, file_metadata, analysisTypes, 
 
     const [bbox_idx, set_bbox_idx] = useState(0);
     const [videoDimensions, setVideoDimensions] = useState({ width: 0, height: 0 });
-    const bboxes = response_data?.frameCheck?.bboxes || [];
-    const total_frames = response_data?.frameCheck?.table_idx.length || 0;
+    let bboxes = response_data?.frameCheck?.bboxes || [];
+    let total_frames = response_data?.frameCheck?.table_idx.length || 0;
 
     const [duration, setDuration] = useState(0);
 
@@ -145,7 +145,20 @@ const ResultsVideoUI = ({ response_data, fileUrl, file_metadata, analysisTypes, 
     };
 
     useEffect(()=>{
-        handleVideoLoadedMetadata()
+        handleVideoLoadedMetadata();
+        
+        // console.log(bboxes)
+        //RESET THE bboxes and total frames in case frame analysis was added again
+        bboxes = response_data?.frameCheck?.bboxes || [];
+        total_frames = response_data?.frameCheck?.table_idx.length || 0;    
+        // console.log(bboxes)
+        if(duration!==0 && bboxes.length!==0){
+            // console.log(bbox_idx,  bboxes[bbox_idx]);
+            let new_idx = Math.floor(videoRef.current.currentTime * total_frames / duration)
+            // console.log("new_idx", new_idx, total_frames, duration)
+            set_bbox_idx(new_idx >= total_frames ? total_frames - 1 : new_idx);
+        }
+        // create the charts depending on the analysis selected
     }, [response_data])
 
     const handleVideoError = (event) => {
@@ -737,9 +750,10 @@ const ResultsVideoUI = ({ response_data, fileUrl, file_metadata, analysisTypes, 
                             </div>
 
                             {
-                                curr_analysis === "audioAnalysis" &&
                                 videoRef !== null &&
-                                <Waveform videoRef={videoRef} />
+                                <div className={`${curr_analysis === "audioAnalysis"? "" : "hidden"}`} >
+                                    <Waveform videoRef={videoRef} />
+                                </div>
                             }
 
                             {
