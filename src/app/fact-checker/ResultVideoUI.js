@@ -389,7 +389,7 @@ const ResultsVideoUI = ({ response_data, fileUrl, file_metadata, analysisTypes, 
             curr_x += 120 / 72;
             doc.setFont("Outfit", "bold");
 
-            frame_result >= -1.3 ? doc.setTextColor(5, 160, 20) : doc.setTextColor(200, 30, 30);
+            frame_result >= 0.7 ? doc.setTextColor(5, 160, 20) : doc.setTextColor(200, 30, 30);
             doc.text(` ${frame_result} `, curr_x, curr_y);
 
             curr_x = mx;
