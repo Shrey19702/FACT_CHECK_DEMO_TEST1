@@ -8,7 +8,7 @@ import { useParams } from 'next/navigation';
 
 const Verifier_results_container = ({ res_data }) => {
 
-    const {id} = useParams();
+    const { id } = useParams();
 
     /*
         sample model responses
@@ -86,14 +86,18 @@ const Verifier_results_container = ({ res_data }) => {
         }
     */
     const model_responses = JSON.parse(res_data["models_responses"]);
-    const [verifier_metadata, set_verifier_metadata] = useState({
-        "showFrameCheck": true,
-        "showAudioCheck": true,
-        "FrameCheckModelUse": 0,
-        "AudioCheckModelUse": 0,
-        "verifierComment": "",
-        "ShowCommentToUser": false
-    });
+    const [verifier_metadata, set_verifier_metadata] = useState(
+        res_data["verifier_metadata"] !== null ?
+            res_data["verifier_metadata"]
+            : {
+                "showFrameCheck": false,
+                "showAudioCheck": false,
+                "FrameCheckModelUse": 0,
+                "AudioCheckModelUse": 0,
+                "verifierComment": "",
+                "ShowCommentToUser": false
+            }
+    );
     const [data_resultsUI, setdata_resultsUI] = useState(null);
 
     const handle_newCheck = () => {
@@ -109,12 +113,7 @@ const Verifier_results_container = ({ res_data }) => {
             [name]: type === 'checkbox' ? checked : type === 'radio' ? parseInt(value) : value
         }));
     }
-
-    useEffect(()=>{
-        if( res_data["verifier_metadata"]!==null ){
-            set_verifier_metadata(res_data["verifier_metadata"]);
-        }
-    }, [])
+    // console.log(data_resultsUI)
     useEffect(() => {
         // console.log(model_responses)
 
@@ -152,9 +151,9 @@ const Verifier_results_container = ({ res_data }) => {
 
     }, [verifier_metadata["AudioCheckModelUse"], verifier_metadata["FrameCheckModelUse"], verifier_metadata["showAudioCheck"], verifier_metadata["showFrameCheck"],])
 
-    const handle_submit = async ()=>{
+    const handle_submit = async () => {
         const res_status = await verify_case(id, verifier_metadata);
-        if(res_status===0){
+        if (res_status === 0) {
             alert("Case Verified!");
         }
     }
@@ -166,12 +165,11 @@ const Verifier_results_container = ({ res_data }) => {
                 res_data["status"] &&
                 <div className=' py-4 px-3 bg-primary/10 border-primary/20 border-2 rounded-xl '>
                     <span className=' font-semibold pr-3 text-lg '>
-                        Note: 
+                        Note:
                     </span>
                     This case has been verified once
                 </div>
             }
-
 
             {/* VERIFIER SETTINGS CHOOSE MODEL */}
             <div className=' pt-6 pb-4 px-4 '>
@@ -278,7 +276,7 @@ const Verifier_results_container = ({ res_data }) => {
                 </div>
 
                 <div>
-                    <div onClick={() => { handle_submit();}} className=' cursor-pointer bg-primary px-6 rounded-full text-white py-2 w-fit hover:scale-x-105 transition-all'>
+                    <div onClick={() => { handle_submit(); }} className=' cursor-pointer bg-primary px-6 rounded-full text-white py-2 w-fit hover:scale-x-105 transition-all'>
                         Submit verification
                     </div>
                 </div>

@@ -38,7 +38,8 @@ const ResultsVideoUI = ({ response_data, fileUrl, file_metadata, analysisTypes, 
 
     //output results
     const [chartData, setChartData] = useState(null);
-    const [curr_analysis, set_curr_analysis] = useState(Object.keys(response_data)[0]);
+    const [curr_analysis, set_curr_analysis] = useState(Object.keys(response_data)[0] );
+
 
     const handleVideoLoadedMetadata = () => {
 
@@ -144,21 +145,34 @@ const ResultsVideoUI = ({ response_data, fileUrl, file_metadata, analysisTypes, 
         setChartData(temp_chart_data);
     };
 
+    // console.log(bbox_idx)
     useEffect(()=>{
-        handleVideoLoadedMetadata();
         
-        // console.log(bboxes)
         //RESET THE bboxes and total frames in case frame analysis was added again
         bboxes = response_data?.frameCheck?.bboxes || [];
+        set_bbox_idx(0);
         total_frames = response_data?.frameCheck?.table_idx.length || 0;    
-        // console.log(bboxes)
+
+        // console.log(duration, bboxes.length)
+
         if(duration!==0 && bboxes.length!==0){
-            // console.log(bbox_idx,  bboxes[bbox_idx]);
             let new_idx = Math.floor(videoRef.current.currentTime * total_frames / duration)
-            // console.log("new_idx", new_idx, total_frames, duration)
+            // console.log(new_idx);
             set_bbox_idx(new_idx >= total_frames ? total_frames - 1 : new_idx);
         }
-        // create the charts depending on the analysis selected
+        
+        if(response_data.frameCheck){
+            set_curr_analysis("frameCheck");
+        }
+        else if(response_data.audioAnalysis){
+            set_curr_analysis("audioAnalysis");
+        }
+
+        // console.log("video durr", videoRef.current.duration  );
+        if( !isNaN( videoRef.current.duration ) ){
+            // create the charts depending on the analysis selected
+            handleVideoLoadedMetadata();
+        }
     }, [response_data])
 
     const handleVideoError = (event) => {
@@ -179,9 +193,10 @@ const ResultsVideoUI = ({ response_data, fileUrl, file_metadata, analysisTypes, 
         const newTime = (event.target.value * duration) / 100;
         videoRef.current.currentTime = newTime;
         setCurrentTime(newTime);
-        let new_idx = Math.floor(newTime * total_frames / duration)
+
+        // let new_idx = Math.floor(newTime * total_frames / duration)
         // we have fixed frames (0-last_frame),
-        set_bbox_idx(new_idx >= total_frames ? total_frames - 1 : new_idx);
+        // set_bbox_idx(new_idx >= total_frames ? total_frames - 1 : new_idx);
     };
 
     const handleTimeUpdate = () => {
@@ -193,8 +208,10 @@ const ResultsVideoUI = ({ response_data, fileUrl, file_metadata, analysisTypes, 
         setCurrentTime(videoRef.current.currentTime);
         //bbox update
         //ensure it doesnt exceed total frames
-        let new_idx = Math.floor(videoRef.current.currentTime * total_frames / duration)
-        set_bbox_idx(new_idx >= total_frames ? total_frames - 1 : new_idx);
+        if(bboxes.length!==0){
+            let new_idx = Math.floor(videoRef.current.currentTime * total_frames / duration)
+            set_bbox_idx(new_idx >= total_frames ? total_frames - 1 : new_idx);
+        }
     };
 
     const formatTime = (time) => {

@@ -164,7 +164,7 @@ export const verify_case = async (id, metadata) => {
         })
         .match({ id });
 
-    console.log('Update Result:', result);
+    // console.log('Update Result:', result);
 
     if (result.error) {
         console.error('Update Error:', result.error);

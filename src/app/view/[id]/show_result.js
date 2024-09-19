@@ -14,6 +14,39 @@ const Result_container = ({res_data}) => {
         }
     }
 
+    const results_data = {
+        "results": {
+            ...res_data["results"]
+        },
+        "analysis_types": {
+            "frameCheck": false,
+            "audioAnalysis": false
+        }
+    };
+    const verifier_metadata = res_data["verifier_metadata"];
+    // AUDIO
+    if (verifier_metadata["showAudioCheck"]) {
+        results_data["analysis_types"]["audioAnalysis"] = true;
+
+        if (verifier_metadata["AudioCheckModelUse"] !== null)
+            results_data["results"]["audioAnalysis"] = model_responses["results"]["audio"][verifier_metadata["AudioCheckModelUse"]];
+    }
+    else
+        results_data["results"]["audioAnalysis"] = undefined;
+
+    // FRAME
+    if (verifier_metadata["showFrameCheck"]) {
+        results_data["analysis_types"]["frameCheck"] = true;
+
+        if (verifier_metadata["FrameCheckModelUse"] !== null)
+            results_data["results"]["frameCheck"] = model_responses["results"]["frame"][verifier_metadata["FrameCheckModelUse"]];
+    }
+    else
+        results_data["results"]["frameCheck"] = undefined;
+
+
+    // console.log(results_data);
+
     return (<>
         <div className=' pt-16 pb-10 px-12'>
             {/* VERIFIER COMMENT */}
@@ -31,17 +64,10 @@ const Result_container = ({res_data}) => {
                 res_data["input_request"]["upload_type"] === "video" &&
 
                 <ResultsVideoUI
-                    response_data={{
-                        "frameCheck": res_data["verifier_metadata"]["showFrameCheck"]? 
-                         model_responses["results"]["frame"][res_data["verifier_metadata"]["FrameCheckModelUse"]]
-                         : undefined,
-                        "audioAnalysis": res_data["verifier_metadata"]["showAudioCheck"]?
-                         model_responses["results"]["audio"][res_data["verifier_metadata"]["AudioCheckModelUse"]]
-                         : undefined,
-                    }}
+                    response_data={results_data["results"]}
                     fileUrl={res_data["signedUrl"]}
                     file_metadata={res_data["file_metadata"]}
-                    analysisTypes={res_data["input_request"]["analysis_types"]}
+                    analysisTypes={results_data["analysis_types"]}
                     handle_newCheck={handle_newCheck}
                 />
             }

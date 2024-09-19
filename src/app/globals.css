@@ -173,3 +173,48 @@ input[type="range"]:active::-moz-range-progress {
 input[type="range"]:disabled::-moz-range-thumb {
 	cursor: not-allowed;
 }
+
+/* SKELETON CSS */
+
+/* .container {
+	display: flex;
+	align-items: center;
+  } */
+  
+  .skeleton-h {
+	background: linear-gradient(90deg, #ddd, #bcd, #ddd);
+	animation: leftToRight 1.5s infinite reverse;
+	background-size: 200%;
+  }
+  .skeleton-l {
+	background: linear-gradient(90deg, #eee, #ebebeb, #eee);
+	animation: leftToRight 1.5s infinite reverse;
+	background-size: 200%;
+  }
+  /* .avatar {
+	width: 50px;
+	height: 50px;
+	border-radius: 50%;
+  } */
+  
+  /* .info {
+	margin-left: 10px;
+  }
+  
+  .text {
+	width: 100px;
+	height: 16px;
+	border-radius: 4px;
+	margin-bottom: 3px;
+  } */
+  
+  @keyframes leftToRight {
+	0% {
+	  background-position: -100% 0;
+	}
+  
+	100% {
+	  background-position: 100% 0;
+	}
+  }
+  
