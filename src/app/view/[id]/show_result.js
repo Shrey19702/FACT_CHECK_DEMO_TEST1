@@ -4,7 +4,7 @@ import ResultsVideoUI from '@/app/fact-checker/ResultVideoUI';
 import ResultsAudioUI from '@/app/fact-checker/ResultAudioUI';
 import { useState, useEffect } from 'react';
 
-const Result_container = ({res_data}) => {
+const Result_container = ({ res_data }) => {
     // console.log(res_data);
     const model_responses = JSON.parse(res_data["models_responses"]);
 
@@ -29,7 +29,7 @@ const Result_container = ({res_data}) => {
         results_data["analysis_types"]["audioAnalysis"] = true;
 
         if (verifier_metadata["AudioCheckModelUse"] !== null)
-            results_data["results"]["audioAnalysis"] = model_responses["results"]["audio"][verifier_metadata["AudioCheckModelUse"]];
+            results_data["results"]["audioAnalysis"] = model_responses["results"]["audio"]["models_results"][verifier_metadata["AudioCheckModelUse"]];
     }
     else
         results_data["results"]["audioAnalysis"] = undefined;
@@ -39,7 +39,7 @@ const Result_container = ({res_data}) => {
         results_data["analysis_types"]["frameCheck"] = true;
 
         if (verifier_metadata["FrameCheckModelUse"] !== null)
-            results_data["results"]["frameCheck"] = model_responses["results"]["frame"][verifier_metadata["FrameCheckModelUse"]];
+            results_data["results"]["frameCheck"] = model_responses["results"]["frame"]["models_results"][verifier_metadata["FrameCheckModelUse"]];
     }
     else
         results_data["results"]["frameCheck"] = undefined;

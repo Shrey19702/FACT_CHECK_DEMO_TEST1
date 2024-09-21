@@ -129,7 +129,7 @@ const Verifier_results_container = ({ res_data }) => {
             results_data["analysis_types"]["audioAnalysis"] = true;
 
             if (verifier_metadata["AudioCheckModelUse"] !== null)
-                results_data["results"]["audioAnalysis"] = model_responses["results"]["audio"][verifier_metadata["AudioCheckModelUse"]];
+                results_data["results"]["audioAnalysis"] = model_responses["results"]["audio"]["models_results"][verifier_metadata["AudioCheckModelUse"]];
         }
         else
             results_data["results"]["audioAnalysis"] = undefined;
@@ -139,7 +139,7 @@ const Verifier_results_container = ({ res_data }) => {
             results_data["analysis_types"]["frameCheck"] = true;
 
             if (verifier_metadata["FrameCheckModelUse"] !== null)
-                results_data["results"]["frameCheck"] = model_responses["results"]["frame"][verifier_metadata["FrameCheckModelUse"]];
+                results_data["results"]["frameCheck"] = model_responses["results"]["frame"]["models_results"][verifier_metadata["FrameCheckModelUse"]];
         }
         else
             results_data["results"]["frameCheck"] = undefined;

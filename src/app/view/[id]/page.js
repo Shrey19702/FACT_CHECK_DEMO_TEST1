@@ -3,12 +3,17 @@ import Navbar from '@/components/Navbar';
 import Result_container from "@/app/view/[id]/show_result";
 import Verifier_results_container from "@/app/view/[id]/verifier_show_results";
 import { get_result_for_id, verify_case } from "@/utils/data_fetch";
+import { redirect } from 'next/navigation';
 
 
 const page = async ({ params }) => {
   const user_data = await get_user_data();
   const case_result_data = await get_result_for_id(params.id);
   // const case_result_data = {}
+
+  if (!user_data) {
+      return redirect("/login");
+  }
 
   return (
     <>

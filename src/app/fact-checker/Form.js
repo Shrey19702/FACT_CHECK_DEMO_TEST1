@@ -263,145 +263,6 @@ const Form = ({ user_data, set_user_data, response_data, set_res_data, fileUrl, 
 
     return (
         <form onSubmit={handle_submit} className=" flex justify-center gap-6 px-5 rounded-xl h-full transition-all">
-            {/* UPLOAD DETAILS + CHECKBOXES */}
-            <div className=' w-2/5 flex flex-col justify-start'>
-
-                {/* SHOW FILES DETAILS WHEN WE HAVE FILES */}
-                <div className={` ${file ? "h-50 mb-4" : "h-0"} overflow-hidden transition-all`}>
-                    <div className=' border rounded-lg px-5 py-4'>
-
-                        <label className="block text-gray-800 mb-2 text-xl font-semibold ">Uploaded File</label>
-
-                        {
-                            file &&
-                            <div className=' flex flex-col gap-3 items-center justify-between py-1'>
-                                {/* FILE BASIC DATA */}
-                                <div className='flex  flex-col gap-3'>
-                                    <div className='flex gap-1'>
-                                        <span className=' min-w-24 font-medium'>File Name:</span>
-                                        <span className=' break-all '>
-                                            {file.name}
-                                        </span>
-                                    </div>
-                                    <div className='flex gap-1'>
-                                        <span className=' min-w-24 font-medium'>File Size:</span>
-                                        {humanFileSize(file.size)}
-                                    </div>
-                                </div>
-                                <button onClick={removeFile} className=' relative group flex gap-3 bg-red-100 hover:bg-red-300 px-4 py-2 rounded-full transition-all duration-300'>
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
-                                        <path strokeLinecap="round" strokeLinejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
-                                    </svg>
-
-                                    {/* <div className=' absolute group-hover:opacity-100 opacity-0 bg-black/70 text-white py-2 w-24 -top-10 left-7 rounded-lg duration-500'>
-                                        remove file
-                                    </div> */}
-
-                                </button>
-                            </div>
-                        }
-                    </div>
-                </div>
-
-                {/* checkboxes */}
-                <div className="  h-fit rounded-xl p-4 border border-gray-200 transition-all duration-500  ">
-                    <label className="block text-gray-800 mb-2 text-xl font-semibold ">Select Analysis Types</label>
-
-                    <div className="flex flex-row gap-4 items-center justify-evenly mt-5 ">
-
-                        {/* FRAME ANALYSIS SELECT */}
-                        <div
-                            onClick={() => { handleAnalysisTypeChange("frameCheck") }}
-                            className={` shadow shadow-primary ${uploadType === 'audio' ? 'hidden' : ''} relative px-3 py-2  cursor-pointer rounded-lg w-full bg-white h-72 transition-all `}
-                        >
-                            <div className=" relative z-10 h-full text-primary text-lg font-medium cursor-pointer flex flex-col justify-evenly items-center">
-
-                                <div className=' text-xl text-center flex items-center w-full justify-between gap-2'>
-                                    {/* SELECT BUTTON */}
-                                    <div className=' min-h-6 min-w-6 bg-slate-200 shadow-inner shadow-primary rounded-full'>
-                                        {
-                                            analysisTypes["frameCheck"] &&
-                                            (
-                                                <div className='h-4 w-4 bg-primary shadow-md shadow-white rounded-full m-1' />
-                                            )
-                                        }
-                                    </div>
-
-                                    {/* TEXT AND (i) */}
-                                    Video Frame Check
-                                    <span className=' relative group text-xs ' >
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1} stroke="currentColor" className="size-6">
-                                            <path strokeLinecap="round" strokeLinejoin="round" d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z" />
-                                        </svg>
-
-                                        <div className='w-fit min-w-32 absolute z-50 -translate-y-1/2 left-4 -top-5 hover:block group-hover:block hidden overflow-hidden p-1 transition-all '>
-                                            <div className=' bg-black/70 text-white  px-4 py-2  rounded-xl rounded-bl-none  backdrop-blur-lg'>
-                                                Analyze frames in the video
-                                            </div>
-                                        </div>
-                                    </span>
-                                </div>
-
-                                <div className={` ${analysisTypes["frameCheck"] ? " text-primary" : " text-primary/40"} select-none transition-all `}>
-                                    <FaPhotoVideo className=' h-40 w-40' />
-                                </div>
-
-                                <div>
-                                    10 Tokens
-                                </div>
-
-                            </div>
-                        </div>
-
-                        {/* AUDIO ANALYSIS SELECT */}
-                        <div
-                            onClick={() => { handleAnalysisTypeChange("audioAnalysis") }}
-                            className={` shadow shadow-primary relative px-3 py-2  cursor-pointer rounded-lg w-full bg-white h-72 transition-all `}
-                        >
-
-                            <div className=" relative h-full text-primary text-lg font-medium cursor-pointer flex flex-col justify-evenly items-center">
-
-                                <div className=' text-xl text-center flex items-center w-full justify-between gap-2'>
-                                    {/* SELECT BUTTON */}
-                                    <div className=' min-h-6 min-w-6 bg-slate-200 shadow-inner shadow-primary rounded-full'>
-                                        {
-                                            analysisTypes["audioAnalysis"] &&
-                                            (
-                                                <div className='h-4 w-4 bg-primary shadow-md shadow-white rounded-full m-1' />
-                                            )
-                                        }
-                                    </div>
-                                    {/* TEXT AND (i) */}
-                                    Audio Spoof Check
-                                    <span className=' relative group text-xs ' >
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1} stroke="currentColor" className="size-6">
-                                            <path strokeLinecap="round" strokeLinejoin="round" d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z" />
-                                        </svg>
-
-                                        <div className='w-fit min-w-32 absolute z-50 -translate-y-1/2 left-4 -top-5 hover:block group-hover:block hidden overflow-hidden p-1 transition-all '>
-                                            <div className=' bg-black/70 text-white  px-4 py-2  rounded-xl rounded-bl-none  backdrop-blur-lg'>
-                                                Analyze audio in the file
-                                            </div>
-                                        </div>
-                                    </span>
-                                </div>
-
-                                <div className={` ${analysisTypes["audioAnalysis"] ? " text-primary" : " text-primary/40"} select-none transition-all `}>
-                                    <PiWaveformBold className=' h-40 w-40' />
-                                </div>
-
-                                <div>
-                                    20 Tokens
-                                </div>
-
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-
-            </div>
-
             {/* SUBMIT + DROP/SHOW FILE */}
             <div className=' w-3/5 flex flex-col justify-start gap-4'>
 
@@ -505,7 +366,144 @@ const Form = ({ user_data, set_user_data, response_data, set_res_data, fileUrl, 
                     </div>
                 </div>
             </div>
+            {/* UPLOAD DETAILS + CHECKBOXES */}
+            <div className=' w-2/5 flex flex-col justify-start'>
 
+                {/* SHOW FILES DETAILS WHEN WE HAVE FILES */}
+                <div className={` ${file ? "h-50 mb-4" : "h-0"} overflow-hidden transition-all`}>
+                    <div className=' border rounded-lg px-5 py-4'>
+
+                        <label className="block text-gray-800 mb-2 text-xl font-semibold ">Uploaded File</label>
+
+                        {
+                            file &&
+                            <div className=' flex flex-col gap-3 items-center justify-between py-1'>
+                                {/* FILE BASIC DATA */}
+                                <div className='flex  flex-col gap-3'>
+                                    <div className='flex gap-1'>
+                                        <span className=' min-w-24 font-medium'>File Name:</span>
+                                        <span className=' break-all '>
+                                            {file.name}
+                                        </span>
+                                    </div>
+                                    <div className='flex gap-1'>
+                                        <span className=' min-w-24 font-medium'>File Size:</span>
+                                        {humanFileSize(file.size)}
+                                    </div>
+                                </div>
+                                <button onClick={removeFile} className=' relative group flex gap-3 bg-red-100 hover:bg-red-300 px-4 py-2 rounded-full transition-all duration-300'>
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                                    </svg>
+
+                                    {/* <div className=' absolute group-hover:opacity-100 opacity-0 bg-black/70 text-white py-2 w-24 -top-10 left-7 rounded-lg duration-500'>
+                                        remove file
+                                    </div> */}
+
+                                </button>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                {/* checkboxes */}
+                <div className={` ${file ? "h-fit": "h-0"} h-fit rounded-xl p-4 border border-gray-200 transition-all duration-500  `}>
+                    <label className="block text-gray-800 mb-2 text-xl font-semibold ">Select Analysis Types</label>
+
+                    <div className="flex flex-row gap-4 items-center justify-evenly mt-5 ">
+
+                        {/* FRAME ANALYSIS SELECT */}
+                        <div
+                            onClick={() => { handleAnalysisTypeChange("frameCheck") }}
+                            className={` shadow shadow-primary ${uploadType === 'audio' ? 'hidden' : ''} relative px-3 py-2  cursor-pointer rounded-lg w-full bg-white h-72 transition-all `}
+                        >
+                            <div className=" relative z-10 h-full text-primary text-lg font-medium cursor-pointer flex flex-col justify-evenly items-center">
+
+                                <div className=' text-xl text-center flex items-center w-full justify-between gap-2'>
+                                    {/* SELECT BUTTON */}
+                                    <div className=' min-h-6 min-w-6 bg-slate-200 shadow-inner shadow-primary rounded-full'>
+                                        {
+                                            analysisTypes["frameCheck"] &&
+                                            (
+                                                <div className='h-4 w-4 bg-primary shadow-md shadow-white rounded-full m-1' />
+                                            )
+                                        }
+                                    </div>
+
+                                    {/* TEXT AND (i) */}
+                                    Video Frame Check
+                                    <span className=' relative group text-xs ' >
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1} stroke="currentColor" className="size-6">
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z" />
+                                        </svg>
+
+                                        <div className='w-fit min-w-32 absolute z-50 -translate-y-1/2 left-4 -top-5 hover:block group-hover:block hidden overflow-hidden p-1 transition-all '>
+                                            <div className=' bg-black/70 text-white  px-4 py-2  rounded-xl rounded-bl-none  backdrop-blur-lg'>
+                                                Analyze frames in the video
+                                            </div>
+                                        </div>
+                                    </span>
+                                </div>
+
+                                <div className={` ${analysisTypes["frameCheck"] ? " text-primary" : " text-primary/40"} select-none transition-all `}>
+                                    <FaPhotoVideo className=' h-40 w-40' />
+                                </div>
+
+                                <div>
+                                    10 Tokens
+                                </div>
+
+                            </div>
+                        </div>
+
+                        {/* AUDIO ANALYSIS SELECT */}
+                        <div
+                            onClick={() => { handleAnalysisTypeChange("audioAnalysis") }}
+                            className={` shadow shadow-primary relative px-3 py-2  cursor-pointer rounded-lg w-full bg-white h-72 transition-all `}
+                        >
+
+                            <div className=" relative h-full text-primary text-lg font-medium cursor-pointer flex flex-col justify-evenly items-center">
+
+                                <div className=' text-xl text-center flex items-center w-full justify-between gap-2'>
+                                    {/* SELECT BUTTON */}
+                                    <div className=' min-h-6 min-w-6 bg-slate-200 shadow-inner shadow-primary rounded-full'>
+                                        {
+                                            analysisTypes["audioAnalysis"] &&
+                                            (
+                                                <div className='h-4 w-4 bg-primary shadow-md shadow-white rounded-full m-1' />
+                                            )
+                                        }
+                                    </div>
+                                    {/* TEXT AND (i) */}
+                                    Audio Spoof Check
+                                    <span className=' relative group text-xs ' >
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1} stroke="currentColor" className="size-6">
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z" />
+                                        </svg>
+
+                                        <div className='w-fit min-w-32 absolute z-50 -translate-y-1/2 left-4 -top-5 hover:block group-hover:block hidden overflow-hidden p-1 transition-all '>
+                                            <div className=' bg-black/70 text-white  px-4 py-2  rounded-xl rounded-bl-none  backdrop-blur-lg'>
+                                                Analyze audio in the file
+                                            </div>
+                                        </div>
+                                    </span>
+                                </div>
+
+                                <div className={` ${analysisTypes["audioAnalysis"] ? " text-primary" : " text-primary/40"} select-none transition-all `}>
+                                    <PiWaveformBold className=' h-40 w-40' />
+                                </div>
+
+                                <div>
+                                    20 Tokens
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
         </form>
     )
 }

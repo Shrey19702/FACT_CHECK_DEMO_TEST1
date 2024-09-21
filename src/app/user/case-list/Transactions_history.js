@@ -113,8 +113,8 @@ const Transactions_history = ({ verifier }) => {
                                             <span className=''>
                                                 {(val.status) ? "Done" : "Pending"}
                                             </span>
-                                            <span className={`rounded-full ${(val.status || verifier) ? (val.prediction ? "bg-green-200" : "bg-red-200") : ""} w-fit h-fit px-4 py-0.5`}>
-                                                {(val.status || verifier) ? (val.prediction ? "Real" : "Fake") : "---"}
+                                            <span className={`rounded-full ${(val.status || verifier) && (val.prediction!==null) ? (val.prediction ? "bg-green-200" : "bg-red-200") : ""} w-fit h-fit px-4 py-0.5`}>
+                                                {(val.status || verifier)&&(val.prediction!==null) ? (val.prediction ? "Real" : "Fake") : "---"}
                                             </span>
                                             <span className=' col-span-2 flex flex-wrap gap-4'>
                                                 {Object.keys(analysis_types).map((input_type, input_idx) => {
@@ -130,12 +130,18 @@ const Transactions_history = ({ verifier }) => {
                                                 {`${time.getDate()}/${time.getMonth()}/${time.getFullYear()}`}
                                             </span>
                                             <span>
-                                                <Link className='underline flex items-center gap-1 ' href={'/view/' + val.id} >
-                                                    link
-                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1} stroke="currentColor" className="size-4">
-                                                        <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
-                                                    </svg>
-                                                </Link>
+                                                {
+                                                    val.prediction!==null ?
+                                                    (
+                                                        <Link className='underline flex items-center gap-1 ' href={'/view/' + val.id} >
+                                                            link
+                                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1} stroke="currentColor" className="size-4">
+                                                                <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+                                                            </svg>
+                                                        </Link>
+                                                    ):
+                                                    "---"
+                                                }
                                             </span>
                                         </div>
                                     )
