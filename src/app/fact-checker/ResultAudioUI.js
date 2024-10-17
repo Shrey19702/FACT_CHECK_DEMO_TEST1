@@ -52,6 +52,7 @@ const ResultsAudioUI = ({ response_data, fileUrl, file_metadata, handle_newCheck
                 let temp_chart_data = {};
 
                 if (response_data["audioAnalysis"]) {
+                    const threshold = response_data["audioAnalysis"].threshold;
                     const audio_chart_data = {
                         labels: response_data['audioAnalysis'].table_idx.map(
                             (val, idx) => {
@@ -63,18 +64,18 @@ const ResultsAudioUI = ({ response_data, fileUrl, file_metadata, handle_newCheck
                             {
                                 label: "Probablility of tampering (-ve value deems suspicious)",
                                 data: response_data['audioAnalysis'].table_values,
-                                backgroundColor: response_data['audioAnalysis'].table_values.map((val, idx) => { return val >= 0 ? "rgba(0,255,0,0.2)" : "rgba(255,0,0,0.2)" }),
+                                backgroundColor: response_data['audioAnalysis'].table_values.map((val, idx) => { return val >= threshold ? "rgba(0,255,0,0.2)" : "rgba(255,0,0,0.2)" }),
                                 barPercentage: 1,
                                 borderRadius: 100,
                                 inflateAmount: 1,
-                                base: -1.3
+                                base: threshold
                             },
                             {
                                 type: 'line',
                                 borderColor: "rgba(0,0,100, 0.3)",
                                 pointRadius: 0,
                                 fill: {
-                                    target: { value: -1.3 },
+                                    target: { value: threshold },
                                     above: "rgba(0,255,0,0.3)",   // Area above the origin
                                     below: "rgba(255,0,0,0.3)"    // below the origin
                                 },
@@ -86,8 +87,8 @@ const ResultsAudioUI = ({ response_data, fileUrl, file_metadata, handle_newCheck
                         ]
                     }
                     temp_chart_data["audioAnalysis"] = audio_chart_data
+                    setChartData(temp_chart_data);
                 }
-                setChartData(temp_chart_data);
             });
         }
 
@@ -98,7 +99,7 @@ const ResultsAudioUI = ({ response_data, fileUrl, file_metadata, handle_newCheck
             }
         };
 
-    }, [waveformRef])
+    }, [waveformRef, response_data])
 
     const handlePlayPause = () => {
         if (wavesurferRef.current.isPlaying()) {
@@ -188,7 +189,7 @@ const ResultsAudioUI = ({ response_data, fileUrl, file_metadata, handle_newCheck
         doc.text(`${wavesurferRef.current.getDuration().toFixed(1)} sec`, curr_x, curr_y);
 
         curr_x = mx;
-        curr_y += fontSize / 72 + 30/72;
+        curr_y += fontSize / 72 + 30 / 72;
 
         //AUDIO ANALYSIS START
         fontSize = 16;
@@ -286,48 +287,79 @@ const ResultsAudioUI = ({ response_data, fileUrl, file_metadata, handle_newCheck
                         {/* Verdict */}
                         <div className=' min-w-80 h-fit w-fit'>
                             {
-                                <>
-                                    {/* AUDIO OK */}
-                                    {
-                                        response_data["audioAnalysis"].result.toFixed(3) >= -1.3 &&
-                                        <span className='flex gap-1 items-center'>
-                                            <span className='font-medium bg-green-200 px-2 py-1 rounded-full w-fit'>No manipulation detected</span>
-                                            in<span className='font-medium'>Audio</span>
-                                        </span>
-                                    }
-                                    {/* AUDIO OK */}
-                                    {
-                                        response_data["audioAnalysis"].result.toFixed(3) < -1.3 &&
-                                        <span className='flex gap-1 items-center'>
-                                            <span className='font-medium bg-red-200 px-2 py-1 rounded-full w-fit'>Manipulation detected</span>
-                                            in<span className='font-medium'>Audio</span>
-                                        </span>
-                                    }
-                                </>
+                                response_data["audioAnalysis"] !== undefined && (
+                                    <>
+                                        {/* AUDIO OK */}
+                                        {
+                                            response_data["audioAnalysis"].result.toFixed(3) >= response_data["audioAnalysis"].threshold &&
+                                            <span className='flex gap-1 items-center text-xl'>
+                                                <span className='font-medium bg-green-200 px-2 mx-2 py-1 rounded-full w-fit'>No manipulation detected</span>
+                                                in<span className='font-medium'>Audio</span>
+                                            </span>
+                                        }
+                                        {/* AUDIO OK */}
+                                        {
+                                            response_data["audioAnalysis"].result.toFixed(3) < response_data["audioAnalysis"].threshold &&
+                                            <span className='flex gap-1 items-center text-xl'>
+                                                <span className='font-medium bg-red-200 px-2 mx-2 py-1 rounded-full w-fit'>Manipulation detected</span>
+                                                in<span className='font-medium'>Audio</span>
+                                            </span>
+                                        }
+                                    </>
+                                )
                             }
                         </div>
 
                         {/* RESULT */}
                         {
+                            // result of all analysis
                             Object.keys(response_data).map((val, idx) => {
-                                const result = (response_data[val].result).toFixed(3);
+                                if (response_data[val] == undefined)
+                                    return
+
+                                let pred = response_data[val].result > response_data[val].threshold;
+                                let perc = (response_data[val].result * 100).toFixed(2);
                                 return (
-                                    <div key={idx} className={` bg-white flex flex-col justify-evenly h-full w-fit items-center gap-3 min-w-96 px-5 py-2 rounded-lg shadow ${(result) > -1.3 ? " shadow-green-700" : " shadow-red-700"}  `}>
+                                    <div key={idx} className={` w-64 bg-white flex flex-col items-center gap-3 px-5 py-2 rounded-lg shadow ${pred ? " shadow-green-700" : " shadow-red-700"}  `}>
                                         <span className=' text-xl'>
                                             {
                                                 val === "audioAnalysis" &&
-                                                (`Audio Check Result`)
+                                                (
+
+                                                    <div className="flex flex-col gap-2">
+                                                        <span className=''>
+                                                            <span className=' pr-4'>
+                                                                Audio Result:
+                                                            </span>
+                                                            <span className={` w-full text-center font-semibold ${pred ? " text-green-700" : "text-red-700"}`}>
+                                                                {pred ? "Real" : "Fake"}
+                                                            </span>
+                                                        </span>
+                                                    </div>
+                                                )
                                             }
                                         </span>
-                                        <span className={` text-2xl px-6 py-2 rounded-full font-semibold ${(result) > -1.3 ? " bg-green-200  text-green-700" : " bg-red-200 text-red-700"}`}>
-                                            {result}
-                                        </span>
+                                        <div className=' flex  items-center w-full gap-2'>
+                                            <span>
+                                                Score:
+                                            </span>
+                                            <span className={` mx-auto text-2xl px-3 py-1 rounded-full  font-semibold ${pred ? " bg-green-200  text-green-700" : " bg-red-200  text-red-700"}`}>
+                                                {perc} %
+                                            </span>
+                                        </div>
+                                        <div className="relative left-0 top-0 h-3 my-3 ml-16 w-[236px] " >
+                                            <input
+                                                type="range"
+                                                className={`result-seperate-slider absolute w-[168px] outline-none transition-all duration-300 cursor-default`}
+                                                min="0"
+                                                max="100"
+                                                value={perc}
+                                            />
+                                        </div>
                                         <span className=' text-xs'>
-                                            {
-                                                val === "audioAnalysis" &&
-                                                (` < -1.3 deems it suspicious of manipulation `)
-                                            }
+                                            confidence on fake or real
                                         </span>
+
                                     </div>
                                 )
                             })
